@@ -1,2 +1,1 @@
-local _, CORE = ...
-
+local Cinnabar, Util, Cfg, Module = unpack(select(2,...))

@@ -1,7 +1,7 @@
-local _, CORE = ...
-local oUF = CORE.oUF
+local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
+local oUF = select(2,...).oUF
 
-oUF.Tags.Methods['Blu:curhp'] = function(unit, realUnit, Shorten, precision)
+oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit, Shorten, precision)
 
     local health = UnitHealth(unit)
 
@@ -9,7 +9,7 @@ oUF.Tags.Methods['Blu:curhp'] = function(unit, realUnit, Shorten, precision)
     -- This is regardless of what type you make it in the config file
     if precision then precision = tonumber(precision) end
     if Shorten == 'true' and precision then
-        assert(type(precision) == "number", "Type given to oUF Tag function, ['Blu:curhp'] parameter, precision invalid (expected number, got " .. type(precision) .. ")")
+        assert(type(precision) == "number", "Type given to oUF Tag function, ['Cinnabar:curhp'] parameter, precision invalid (expected number, got " .. type(precision) .. ")")
         if health < 10000 then
             return health
         else
@@ -21,9 +21,9 @@ oUF.Tags.Methods['Blu:curhp'] = function(unit, realUnit, Shorten, precision)
 
 end
 
-oUF.Tags.Methods['Blu:smartpower'] = function(unit, realUnit)
+oUF.Tags.Methods['Cinnabar:smartpower'] = function(unit, realUnit)
 
-    local AbsOrPerc = C.UnitFrames.PercentagePower
+    local AbsOrPerc = Cfg.defaults.UnitFrames.PercentagePower
     local class = select(2,UnitClass(unit))
     local spec = GetSpecialization()
 
@@ -36,7 +36,7 @@ oUF.Tags.Methods['Blu:smartpower'] = function(unit, realUnit)
     end
 end
 
-oUF.Tags.Methods['Blu:smartname'] = function(unit, realUnit, ColorText, Mirror)
+oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit, ColorText, Mirror)
 
     local name = UnitName(unit)
 
@@ -45,8 +45,8 @@ oUF.Tags.Methods['Blu:smartname'] = function(unit, realUnit, ColorText, Mirror)
     name = string.sub(name, 1, 7)
 
     local level = UnitLevel(unit)
-    
-    if unit == 'target' and ColorText == 'true' and level ~= B.MAX_LEVEL then
+
+    if unit == 'target' and ColorText == 'true' and level ~= Cinnabar.data.MAX_LEVEL then
         -- These are substitute strings for use in string.format
         local easyTarget =  '|cFF00FF00%s|r' -- Colors the text green
         local mediumTarget = '|cFF00FFFF%s|r' -- Colors the text yellow
@@ -69,7 +69,7 @@ oUF.Tags.Methods['Blu:smartname'] = function(unit, realUnit, ColorText, Mirror)
     end
 
     -- If the level is capped, discard it, don't need to display shit that is assumed
-    if level == B.MAX_LEVEL then level = '' end
+    if level == Cinnabar.data.MAX_LEVEL then level = '' end
 
     if Mirror == 'true' then
         return string.format("%s %s", name, level)
@@ -79,10 +79,10 @@ oUF.Tags.Methods['Blu:smartname'] = function(unit, realUnit, ColorText, Mirror)
 end
 
 -- oUF tag event register
-oUF.Tags.Events['Blu:curhp'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
-oUF.Tags.Events['Blu:smartname'] = 'UNIT_LEVEL PLAYER_LEVEL_UP UNIT_NAME_UPDATE'
+oUF.Tags.Events['Cinnabar:curhp'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
+oUF.Tags.Events['Cinnabar:smartname'] = 'UNIT_LEVEL PLAYER_LEVEL_UP UNIT_NAME_UPDATE'
 
 
-oUF.Tags.Events['Blu:smartpower'] = 'UNIT_MAXPOWER UNIT_POWER_FREQUENT UNIT_POWER_UPDATE'
+oUF.Tags.Events['Cinnabar:smartpower'] = 'UNIT_MAXPOWER UNIT_POWER_FREQUENT UNIT_POWER_UPDATE'
 oUF.colors.power[0] = {46 / 255, 140 / 255, 250 / 255}
 oUF.colors.power.MANA = oUF.colors.power[0]
