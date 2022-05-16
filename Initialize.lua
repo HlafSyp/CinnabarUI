@@ -27,7 +27,7 @@ Cinnabar.data = {
 ------------
 -- Assign --
 ------------
-core[1] = Cinnbar   -- Core Table, holds central functions to the addon used in the majority of modules
+core[1] = Cinnabar   -- Core Table, holds central functions to the addon used in the majority of modules
 core[2] = {}        -- Utility Table, any debug stuff or other utility functions will be placed in here
 core[3] = config    -- Configuration Table, holds all config data
 core[5] = m         -- Modules Table, Holds all Module tables

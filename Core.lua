@@ -1,25 +1,5 @@
 local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
-function Cinnabar:OnInitialize()
-
-
-
-end
-
-function Cinnabar:OnEnable()
-
-  CompileMountJournal()
-
-end
-
-
-function Cinnabar:OnDisable()
-
-
-
-
-end
-
 -- Creates a table of every mount and their id
 -- I pulled this out from the Tooltip file as is,
 -- and modified it to work in this file instead,
@@ -43,7 +23,28 @@ local function CompileMountJournal()
     table.insert(ms,  spellID)
   end
 
-  Cinnabar.Mount.IDs = mj
-  Cinnabar.Mount.SpellIDs = ms
+  Cinnabar.data.Mount.IDs = mj
+  Cinnabar.data.Mount.SpellIDs = ms
+
+end
+
+
+function Cinnabar:OnInitialize()
+
+
+
+end
+
+function Cinnabar:OnEnable()
+
+  CompileMountJournal()
+
+end
+
+
+function Cinnabar:OnDisable()
+
+
+
 
 end
