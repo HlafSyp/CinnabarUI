@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Libraries/oUF/init.lua"/>
+	<Script file="Libraries/oUF/private.lua"/>
+	<Script file="Libraries/oUF/ouf.lua"/>
+	<Script file="Libraries/oUF/events.lua"/>
+	<Script file="Libraries/oUF/factory.lua"/>
+	<Script file="Libraries/oUF/blizzard.lua"/>
+	<Script file="Libraries/oUF/units.lua"/>
+	<Script file="Libraries/oUF/colors.lua"/>
+Libraries/oUF/
+	<Script file="Libraries/oUF/elements\additionalpower.lua"/>
+	<Script file="Libraries/oUF/elements\alternativepower.lua"/>
+	<Script file="Libraries/oUF/elements\assistantindicator.lua"/>
+	<Script file="Libraries/oUF/elements\auras.lua"/>
+	<Script file="Libraries/oUF/elements\castbar.lua"/>
+	<Script file="Libraries/oUF/elements\classpower.lua"/>
+	<Script file="Libraries/oUF/elements\combatindicator.lua"/>
+	<Script file="Libraries/oUF/elements\grouproleindicator.lua"/>
+	<Script file="Libraries/oUF/elements\health.lua"/>
+	<Script file="Libraries/oUF/elements\healthprediction.lua"/>
+	<Script file="Libraries/oUF/elements\leaderindicator.lua"/>
+	<Script file="Libraries/oUF/elements\phaseindicator.lua"/>
+	<Script file="Libraries/oUF/elements\portrait.lua"/>
+	<Script file="Libraries/oUF/elements\power.lua"/>
+	<Script file="Libraries/oUF/elements\powerprediction.lua"/>
+	<Script file="Libraries/oUF/elements\pvpclassificationindicator.lua"/>
+	<Script file="Libraries/oUF/elements\pvpindicator.lua"/>
+	<Script file="Libraries/oUF/elements\questindicator.lua"/>
+	<Script file="Libraries/oUF/elements\raidroleindicator.lua"/>
+	<Script file="Libraries/oUF/elements\raidtargetindicator.lua"/>
+	<Script file="Libraries/oUF/elements\range.lua"/>
+	<Script file="Libraries/oUF/elements\readycheckindicator.lua"/>
+	<Script file="Libraries/oUF/elements\restingindicator.lua"/>
+	<Script file="Libraries/oUF/elements\resurrectindicator.lua"/>
+	<Script file="Libraries/oUF/elements\runes.lua"/>
+	<Script file="Libraries/oUF/elements\stagger.lua"/>
+	<Script file="Libraries/oUF/elements\summonindicator.lua"/>
+	<Script file="Libraries/oUF/elements\tags.lua"/>
+	<Script file="Libraries/oUF/elements\threatindicator.lua"/>
+	<Script file="Libraries/oUF/elements\totems.lua"/>
+
+	<Script file="Libraries/oUF/finalize.lua"/>
+
+	<!--
+		Sub-object as a child of the parent unit frame:
+	<Button name="oUF_HeaderTargetTemplate" inherits="SecureUnitButtonTemplate" virtual="true">
+		<Frames>
+			<Button name="$parentTarget" inherits="SecureUnitButtonTemplate">
+				<Attributes>
+					<Attribute name="unitsuffix" type="string" value="target"/>
+					<Attribute name="useparent-unit" type="boolean" value="true"/>
+				</Attributes>
+			</Button>
+		</Frames>
+	</Button>
+
+		Separate unit template example:
+	<Button name="oUF_HeaderSeparateSubOjectsTemplate" inherits="SecureUnitButtonTemplate" virtual="true">
+		<Attributes>
+			<Attribute name="oUF-onlyProcessChildren" type="boolean" value="true"/>
+		</Attributes>
+
+		<Frames>
+			<Button name="$parentUnit" inherits="SecureUnitButtonTemplate">
+				<Attributes>
+					<Attribute name="useparent-unit" type="boolean" value="true"/>
+				</Attributes>
+			</Button>
+
+			<Button name="$parentPet" inherits="SecureUnitButtonTemplate">
+				<Attributes>
+					<Attribute name="unitsuffix" type="string" value="pet"/>
+					<Attribute name="useparent-unit" type="boolean" value="true"/>
+				</Attributes>
+			</Button>
+
+			<Button name="$parentTarget" inherits="SecureUnitButtonTemplate">
+				<Attributes>
+					<Attribute name="unitsuffix" type="string" value="target"/>
+					<Attribute name="useparent-unit" type="boolean" value="true"/>
+				</Attributes>
+			</Button>
+		</Frames>
+	</Button>
+	-->
+</Ui>

@@ -1,0 +1,56 @@
+## Interface: 90200
+## Title: |cFFE34234CinnabarUI|r
+## Notes: A small, minimalistic UI overhaul
+## Author: HlafSyp
+## X-oUF: CinnabaroUF
+## Version: 0.2
+
+# Libraries
+Libraries/LibStub/LibStub.lua
+Libraries/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Libraries/AceAddon-3.0/AceAddon-3.0.lua
+Libraries/AceGUI-3.0/AceGUI-3.0.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-BlizOptionsGroup.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-DropDownGroup.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-Frame.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-InlineGroup.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-ScrollFrame.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-TabGroup.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-TreeGroup.lua
+Libraries/AceGUI-3.0/widgets/AceGUIContainer-Window.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-Button.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-ColorPicker.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-DropDown.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-DropDown-Items.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-EditBox.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-Heading.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-Icon.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-InteractiveLabel.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-Keybinding.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-Label.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-MultilineEditBox.lua
+Libraries/AceGUI-3.0/widgets/AceGUIWidget-Slider.lua
+Libraries/AceSerializer-3.0/AceSerializer-3.0.lua
+Libraries/LibSharedMedia-3.0/LibSharedMedia-3.0.lua
+Libraries/oUF/oUF.xml
+Libraries/oUF_Smooth/oUF_Smooth.lua
+Libraries/oUF_AuraBars/oUF_AuraBars.lua
+Libraries/LibDeflate-1.0.2/LibDeflate.lua
+Libraries/LibSerialize/LibSerialize.lua
+
+# Initialization Files
+Initialize.lua
+Utilities.lua
+
+# Config Files
+Config/Defaults.lua
+Config/Manager.lua
+
+# Modules
+Modules/UnitFrames/Tags.lua
+Modules/UnitFrames/Unitframes.lua
+
+# Core Files
+Core.lua
+
