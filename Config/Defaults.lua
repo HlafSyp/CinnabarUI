@@ -163,6 +163,7 @@ Cfg.defaults = {
   Modules = {
     ["UnitFrames"]  = true,
     ["Tooltip"]     = true,
+    ["Databar"]    = true,
   },
   -- UnitFrames Module Config
   UnitFrames = {
@@ -319,19 +320,6 @@ Cfg.defaults = {
         yOffset = -376,
         UninteruptibleColors = {0.5,0.5,0.5}
       },
-
-      -------------------------------------------------------
-      ------ Databar Options
-      -------------------------------------------------------
-      -- These are reserved exclusively for the player
-      Databar = {
-        EnableXP = true,
-        EnableHonor = true,
-        EnableReputation = true,
-        HideXPAtMaxLevel = true,    -- Hides the xp bar if the player is max level
-        TopAnchor = false,          -- Anchors the data bars to the top of the minimap instead of the bottom
-      },
-
     },
     target = {
       -------------------------------------------------------
@@ -413,5 +401,21 @@ Cfg.defaults = {
     focustarget = {},
     pet = {},
     Auras = Auras
-  }
+  },
+  Tooltip = {
+    Anchor = {
+      relativePoint = "BOTTOMRIGHT",
+      point = "BOTTOMRIGHT",
+      OffsetX = -10,
+      OffsetY = 10,
+    }
+  },
+  Databar = {
+    EnableXP = true,
+    EnableHonor = true,
+    EnableReputation = true,
+    HideXPAtMaxLevel = true,    -- Hides the xp bar if the player is max level
+    TopAnchor = false,          -- Anchors the data bars to the top of the minimap instead of the bottom
+  },
 }
+

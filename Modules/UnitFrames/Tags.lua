@@ -1,6 +1,6 @@
-local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
+local Cinnabar, Util, Cfg, _ = unpack(select(2,...))
 local oUF = select(2,...).oUF
-
+-- luacheck: ignore
 oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit, Shorten, precision)
 
     local health = UnitHealth(unit)
@@ -13,7 +13,7 @@ oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit, Shorten, precision
         if health < 10000 then
             return health
         else
-            health = U:ShortenNumber(3,1,health)
+            health = Util:ShortenNumber(3,1,health)
         end
     end
 

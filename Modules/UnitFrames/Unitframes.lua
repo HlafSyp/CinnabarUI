@@ -1,23 +1,25 @@
 local Cinnabar, _, Cfg, Module = unpack(select(2,...))
 
 -- If user doesn't want this module enabled then return early
-if not Cfg.defaults.Modules["UnitFrames"] then return end
+if not true--[[Cfg.config.Modules["UnitFrames"]--]] then return end
 
 local oUF = select(2,...).oUF
 local uf = Module["UnitFrames"]
 uf.Frames = {}
-local cfg = Cfg.defaults.UnitFrames
+local cfg = Cfg:GetValue("UnitFrames")
 
 
 -- Local Declarations
+-- luacheck: push ignore
 local CreateFrame, UnitClass = CreateFrame, UnitClass
 local GameTooltip_SetDefaultAnchor, GameTooltip = GameTooltip_SetDefaultAnchor, GameTooltip
 local UIParent = UIParent
 local Round = Round
+--luacheck: pop
 
 -- Creates a Statusbar frame, sets the neccessary oUF config options and returns the frame
 -- This function will always be called first when it comes to creating Unitframes
----------------------------------------
+
 -- @ARGUMENTS
 -- self (table) : This is the frame created by oUF:Spawn(unit)
 -- unit (string) : Stringified unit name (player, target, focus, etc)
@@ -568,6 +570,7 @@ end
 --                 eg.) player, target, focus, etc
 -- @RETURNS
 -- unit (table) : Returns the frame the unit's frame is built upon
+-- luacheck: ignore self
 function uf:RegisterUnit(self, unit)
 
 

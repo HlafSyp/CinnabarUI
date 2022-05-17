@@ -12,7 +12,7 @@ local m = {}
 
 m["UnitFrames"] = Cinnabar:NewModule("UnitFrames")
 m["Tooltip"]    = Cinnabar:NewModule("Tooltip")
-
+m["Databar"]    = Cinnabar:NewModule("Databar")
 -------------
 --  Extra  --
 -------------
