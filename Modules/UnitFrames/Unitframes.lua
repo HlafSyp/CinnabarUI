@@ -8,15 +8,6 @@ local uf = Module["UnitFrames"]
 uf.Frames = {}
 local cfg = Cfg:GetValue("UnitFrames")
 
-
--- Local Declarations
--- luacheck: push ignore
-local CreateFrame, UnitClass = CreateFrame, UnitClass
-local GameTooltip_SetDefaultAnchor, GameTooltip = GameTooltip_SetDefaultAnchor, GameTooltip
-local UIParent = UIParent
-local Round = Round
---luacheck: pop
-
 -- Creates a Statusbar frame, sets the neccessary oUF config options and returns the frame
 -- This function will always be called first when it comes to creating Unitframes
 
@@ -570,7 +561,6 @@ end
 --                 eg.) player, target, focus, etc
 -- @RETURNS
 -- unit (table) : Returns the frame the unit's frame is built upon
--- luacheck: ignore self
 function uf:RegisterUnit(self, unit)
 
 
@@ -602,7 +592,11 @@ function uf:RegisterUnit(self, unit)
 
   self:HookScript("OnEnter", function ()
       self.Highlight:Show()
-      GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+
+      -- Need to default to UIParent in case the Tooltip Module is disabled
+      local anchor = UIParent
+      if Cinnabar:GetModule("Tooltip"):IsEnabled() then anchor = CinnabarTooltipAnchor end
+      GameTooltip_SetDefaultAnchor(GameTooltip, anchor)
       GameTooltip:SetUnit(unit)
       GameTooltip:Show()
   end)

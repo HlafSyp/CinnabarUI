@@ -1,6 +1,6 @@
 local Cinnabar, Util, Cfg, _ = unpack(select(2,...))
 local oUF = select(2,...).oUF
--- luacheck: ignore
+
 oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit, Shorten, precision)
 
     local health = UnitHealth(unit)

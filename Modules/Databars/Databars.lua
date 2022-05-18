@@ -1,4 +1,3 @@
--- luacheck: ignore Util
 local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
 -- Store the bars locally so that I can assign the proper values when the player logs in
@@ -16,15 +15,6 @@ local point = TA and "BOTTOM" or "TOP"
 local rP = TA and "TOP" or "BOTTOM"
 local xOfs = 0
 local yOfs = TA and spacing or -spacing
-
--- luacheck: push ignore
-local GetXPExhaustion, UnitXP, UnitXPMax = GetXPExhaustion, UnitXP, UnitXPMax
-local UnitHonor, UnitHonorMax, UnitLevel = UnitHonor, UnitHonorMax, UnitLevel
-local GameTooltip,  UnitHonorLevel, GetWatchedFactionInfo = GameTooltip, UnitHonorLevel, GetWatchedFactionInfo
-local getglobal, CreateFrame, UIParent, Minimap, FACTION_BAR_COLORS, MAX_REPUTATION_REACTION, C_Reputation =
-      getglobal, CreateFrame, UIParent, Minimap, FACTION_BAR_COLORS, MAX_REPUTATION_REACTION, C_Reputation
-local GetFriendshipReputationRanks, GetFriendshipReputation = GetFriendshipReputationRanks, GetFriendshipReputation
--- luacheck: pop
 
 -- Realigns the Rep bar and XP bar depending on if the bar needs to be visible or not
 --  I pulled this out since it was starting to get a little big
@@ -49,7 +39,6 @@ local GetFriendshipReputationRanks, GetFriendshipReputation = GetFriendshipReput
 -- Pulled From ReputationBar.lua inside FrameXML
 -- From what I could tell, this handles not only setting the appropriate values of the statusbar
 -- But also coloring of the status bar
--- luacheck: ignore friendTextLevel
 local function RepBarUpdate()
   local name, reaction, minBar, maxBar, value, factionID = GetWatchedFactionInfo();
   local colorIndex = reaction;
@@ -486,7 +475,6 @@ local function EnableDatabars()
 
 end
 
--- luacheck: ignore self
 function Bars:OnInitialize()
 
   CreateDataBars()

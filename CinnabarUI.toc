@@ -47,11 +47,11 @@ Utilities.lua
 Config/Defaults.lua
 Config/Manager.lua
 
+Modules/Tooltip/Tooltip.lua
+
 # Modules
 Modules/UnitFrames/Tags.lua
 Modules/UnitFrames/Unitframes.lua
-
-Modules/Tooltip/Tooltip.lua
 
 Modules/Databars/Databars.lua
 

@@ -6,8 +6,7 @@ local hooksecurefunc, GameTooltip, UIParent = hooksecurefunc, GameTooltip, UIPar
 local GetActionInfo, UnitIsPlayer, UnitAura = GetActionInfo, UnitIsPlayer, UnitAura
 local C_MountJournal, GetSpellBookItemInfo = C_MountJournal, GetSpellBookItemInfo
 local CreateFrame = CreateFrame
-
-local TooltipAnchor = CreateFrame("Frame", "BluTooltipAnchor", UIParent)
+local TooltipAnchor = CreateFrame("Frame", "CinnabarTooltipAnchor", UIParent)
 -- local MountIDs = Cinnabar.data.Mount.IDs
 local MountSpellIDs = Cinnabar.data.Mount.SpellIDs
 
@@ -67,7 +66,7 @@ end
 -- @ARGUMENTS
 -- tooltip (frame) : This is given when SetDefaultAnchor is called, it is the GameTooltip Object
 -- parent (Frame)  : This the frame the tooltip will have its owner set to
-function GameTooltip_SetDefaultAnchor(tooltip, parent)
+local function AnchorTooltip(tooltip, parent)
   tooltip:SetOwner(parent, "ANCHOR_NONE")
   tooltip:SetPoint("BOTTOMRIGHT", TooltipAnchor, "BOTTOMRIGHT", 0, 0)
 end
@@ -81,6 +80,12 @@ end
 -- @ARGUMENTS
 -- These are passed in from SetSpellBookItem
 function TT:SetSpellBookItem(spellBookId, bookType)
+
+  -- If the Tooltip Module is disabled then return early
+  if not TT:IsEnabled() then
+    GameTooltip:Show()
+    return
+  end
 
   -- Have to convert the given id into the proper spell id
   local _, spellId = GetSpellBookItemInfo(spellBookId, bookType)
@@ -99,6 +104,9 @@ end
 -- These are passed in from SetUnitAura
 function TT:SetUnitAura(unitID, auraIndex, filter)
 
+  -- If the Tooltip Module is disabled then return early
+  if not TT:IsEnabled() then return GameTooltip:Show() end
+
   local AuraSpellId = select(10, UnitAura(unitID, auraIndex, filter))
   GameTooltip:AddDoubleLine("Aura ID:", tostring(AuraSpellId), nil, nil, nil, 1, 1, 1)
 
@@ -115,6 +123,12 @@ function TT:SetUnitAura(unitID, auraIndex, filter)
 end
 
 function TT:SetUnit(unit)
+
+  -- If the Tooltip Module is disabled then return early
+  if not TT:IsEnabled() then
+    GameTooltip:Show()
+    return
+  end
 
   -- Some local variables
   local IsPlayer = UnitIsPlayer(unit)
@@ -146,6 +160,9 @@ end
 
 function TT:SetAction(slot)
 
+  -- If the Tooltip Module is disabled then return early
+  if not TT:IsEnabled() then return GameTooltip:Show() end
+
   local actionType, id = GetActionInfo(slot)
   if actionType == 'spell' then
     GameTooltip:AddDoubleLine('Spell ID:', id, nil, nil, nil, 1, 1, 1)
@@ -159,7 +176,7 @@ end
 -- This is the initialization function for the Tooltip Module
 -- Essentially, this is the entry point for the module and will be the first thing run for the module
 -- Aside from any frame creations as that has to be done before the PLAYER_LOGIN event is fired
-function TT:OnEnable()
+function TT:OnInitialize()
 
   TooltipAnchor:SetSize(50, 10)
   TooltipAnchor:SetPoint(Cfg:GetValue("Tooltip.Anchor.point"),
@@ -200,3 +217,17 @@ function TT:OnEnable()
   GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 
 end
+
+function TT:OnEnable()
+
+  GameTooltip_SetDefaultAnchor = AnchorTooltip
+
+end
+
+function TT:OnDisable()
+  GameTooltip_SetDefaultAnchor = function(tooltip, parent)
+    tooltip:SetOwner(parent, "ANCHOR_NONE");
+	  tooltip:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -CONTAINER_OFFSET_X - 13, CONTAINER_OFFSET_Y);
+  end
+end
+
