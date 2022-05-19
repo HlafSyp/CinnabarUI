@@ -46,6 +46,7 @@ Utilities.lua
 # Config Files
 Config/Defaults.lua
 Config/Manager.lua
+Config/Window.lua
 
 Modules/Tooltip/Tooltip.lua
 

@@ -1,11 +1,23 @@
 local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
+local ADDON_PREFIX_COLOR = "FFE34234"
+
 -- GLOBAL FUNCTIONS
 local string_find = string.find
 local type, assert, tostring, tonumber = type, assert, tostring, tonumber
 local string_format = string.format
 local string_sub = string.sub
 local string_len = string.len
+
+
+-- Prints a message into the default chat frame
+-- pretty self *insert aggressive word* explanatory
+function Util:Print(message)
+
+    local msg_prefix = string_format("|c%sCinnabarUI|r: ", ADDON_PREFIX_COLOR)
+    DEFAULT_CHAT_FRAME:AddMessage(string_format("%s %s", msg_prefix, message))
+
+end
 
 -- Looks through the unit's auras for a mount buff, then returns the mount id of that mount
 ---------------------------------------

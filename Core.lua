@@ -31,7 +31,17 @@ end
 
 function Cinnabar:OnInitialize()
 
+  -- Register the slash commands to open the config menu
+  SLASH_CINNABAR1 = "/cinnabar"
+  SlashCmdList["CINNABAR"] = function(msg)
 
+    if Cfg:IsEnabled() then
+      Cfg:Disable()
+    else
+      Cfg:Enable()
+    end
+
+  end
 
 end
 
