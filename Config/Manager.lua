@@ -29,7 +29,7 @@ end
 
 local function CreateConfigMenu()
 
-  Util:Print("Container Created")
+  -- Util:Print("Container Created")
   Container         = CreateFrame("Frame", "CinnabarUiConfig", UIParent)
   Container.Options = Cinnabar.Win:CreateContainer(Container, 600, 500)
   Container.Tabs    = Cinnabar.Win:CreateContainer(Container, 150, 500)
@@ -88,7 +88,7 @@ end
 
 function Cfg:OnDisable()
 
-  Util:Print("Config Menu Closed")
+  -- Util:Print("Config Menu Closed")
   Container:Hide()
 
 end
