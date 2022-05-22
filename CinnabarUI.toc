@@ -48,6 +48,7 @@ Utilities.lua
 Config/Defaults.lua
 Config/Manager.lua
 Config/Window.lua
+Config/Menu.lua
 
 Modules/Tooltip/Tooltip.lua
 

@@ -9,7 +9,7 @@ function Win:CreateConfigMenu()
 
 end
 
-function Win:CreateButton(parent)
+function Win:CreateCheckButton(parent)
 
 end
 
@@ -69,6 +69,11 @@ function Win:CreateMenuButton(parent, height)
     btn.Text:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), size, "OUTLINE")
   end
 
+  function btn:SetText(text)
+    assert(type(text) == 'string', 'Usage: btn:SetText(text) from Cinnabar.Win expected argument of type string got ' .. type(text))
+    btn.Text:SetText(text)
+  end
+
   return btn
 
 end
@@ -95,7 +100,7 @@ function Win:CreateTitleBar(parent, height)
   titlebar.title:SetPoint("BOTTOMLEFT")
   titlebar.title:SetTextColor(COLOR.r, COLOR.g, COLOR.b)
   titlebar.title:SetJustifyV("MIDDLE")
-  function titlebar:SetTitle(text)
+  function parent:SetTitle(text)
 
     if not text then text = "Titlebar" end
     titlebar.title:SetText(text)
@@ -124,6 +129,11 @@ function Win:CreateContainer(parent, width, height, name)
   Container.bg = Container:CreateTexture()
   Container.bg:SetAllPoints(Container)
   Container.bg:SetColorTexture(0.085, 0.085, 0.085, 0.8)
+
+  function Container:AddTitle(text)
+    Container.title = Win:CreateTitleBar(self)
+    Container:SetTitle(text)
+  end
 
   return Container
 
