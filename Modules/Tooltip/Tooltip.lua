@@ -179,11 +179,11 @@ end
 function TT:OnInitialize()
 
   TooltipAnchor:SetSize(50, 10)
-  TooltipAnchor:SetPoint(Cfg:GetValue("Tooltip.Anchor.point"),
+  TooltipAnchor:SetPoint(Cfg.config.Tooltip.Anchor.point,
                          "UIParent",
-                         Cfg:GetValue("Tooltip.Anchor.relativePoint"),
-                         Cfg:GetValue("Tooltip.Anchor.OffsetX"),
-                         Cfg:GetValue("Tooltip.Anchor.OffsetY"))
+                         Cfg.config.Tooltip.Anchor.relativePoint,
+                         Cfg.config.Tooltip.Anchor.OffsetX,
+                         Cfg.config.Tooltip.Anchor.OffsetY)
   -- Have to do this to get the tooltips to add the stuff i want
   hooksecurefunc(GameTooltip, "SetUnitAura", TT.SetUnitAura)
   hooksecurefunc(GameTooltip, "SetUnit", TT.SetUnit)

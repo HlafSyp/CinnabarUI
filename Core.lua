@@ -43,6 +43,14 @@ function Cinnabar:OnInitialize()
 
   end
 
+  -- Steal a Game Menu Button to make it our addon's
+  local btn = GameMenuButtonWhatsNew
+  btn.Text:SetText(string.format("|c%sCinnabarUI|r ", Cinnabar.data.COLORS.UI_FG.hex))
+  btn:SetScript("OnClick", function()
+    Cfg:Enable()
+    ToggleGameMenu()
+  end)
+
 end
 
 function Cinnabar:OnEnable()
@@ -54,7 +62,7 @@ end
 
 function Cinnabar:OnDisable()
 
-
+  Cfg:SaveConfigToSV()
 
 
 end

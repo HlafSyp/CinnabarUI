@@ -28,6 +28,7 @@ local Auras = {
   -- Death Knight
   [48707] = 'Anti-Magic Shell',
   [101568] = 'Dark Succor',
+  [194844] = 'Bonestorm',
     -- Blood
     [195181] = 'Bone Shield',
     [194679] = 'Rune Tap',
@@ -394,6 +395,7 @@ Cfg.defaults = {
         relativePoint = 'CENTER',
         xOffset = 0,
         yOffset = - 350,
+        UninteruptibleColors = {0.5,0.5,0.5}
       }
     },
     targettarget = {},

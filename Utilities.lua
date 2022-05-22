@@ -1,6 +1,6 @@
 local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
-local ADDON_PREFIX_COLOR = "FFE34234"
+local ADDON_PREFIX_COLOR = Cinnabar.data.COLORS.UI_PRIMARY.hex
 
 -- GLOBAL FUNCTIONS
 local string_find = string.find
@@ -14,6 +14,8 @@ local string_len = string.len
 -- pretty self *insert aggressive word* explanatory
 function Util:Print(message)
 
+    if type(message) == "nil" then message = "nil" end
+    if type(message) == 'boolean' then message = message and "true" or "false" end
     local msg_prefix = string_format("|c%sCinnabarUI|r: ", ADDON_PREFIX_COLOR)
     DEFAULT_CHAT_FRAME:AddMessage(string_format("%s %s", msg_prefix, message))
 

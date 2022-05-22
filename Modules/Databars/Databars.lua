@@ -411,7 +411,7 @@ local function SetTooltip()
     Bars.Repbar:SetScript('OnLeave', function()
 
       GameTooltip:Hide()
-      GameTooltip:SetOwner()
+      GameTooltip:SetOwner(UIParent)
 
     end)
   end

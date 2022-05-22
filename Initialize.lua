@@ -22,7 +22,11 @@ Cinnabar.data = {
     Mount = {
         IDs = {},
         SpellIDs = {},
-    }
+    },
+    COLORS = {
+        UI_FG       = {r = 1, g = 0.88, b = 0.85,hex = "ffffe1da"},
+        UI_PRIMARY  = {r = 0.89, g = 0.3, b = 0.18,hex = "ffE44D2E"},
+    },
 }
 
 ------------

@@ -1,7 +1,7 @@
 local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
 local Win = {}
-local COLOR = {r = 0.89, g = 0.25, b = 0.2, hex = "e34234"}
+local COLOR = Cinnabar.data.COLORS.UI_FG
 
 
 function Win:CreateConfigMenu()
@@ -10,6 +10,16 @@ function Win:CreateConfigMenu()
 end
 
 function Win:CreateButton(parent)
+
+end
+
+function Win:CreateEntryBox(parent)
+
+  assert(type(parent) == 'table', "Function Win:CreateEntryBox(parent) not given valid argument for parameter #1")
+
+  local entry = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
+
+  return entry
 
 end
 
@@ -44,14 +54,20 @@ function Win:CreateMenuButton(parent, height)
   -- Create a better looking bg
   btn.bg = btn:CreateTexture()
   btn.bg:SetAllPoints(btn)
-  btn.bg:SetColorTexture(0.15,0.15,0.15,0.5)
+  btn.bg:SetColorTexture(0.15,0.15,0.15,0.2)
 
   -- Add a backdrop
   btn.backdrop = Win:AddBackdrop(btn, 2)
-
+  btn.backdrop:SetBackdropColor(0,0,0,0.5)
   -- Fix Highlight texture
   btn.HighlightTexture:SetAllPoints(btn)
-  btn.HighlightTexture:SetColorTexture(1,1,1,0.2)
+  btn.HighlightTexture:SetColorTexture(1,1,1,0.1)
+
+  -- Set up some customization functions
+  function btn:SetFontSize(size)
+    if not size then size = 13 end
+    btn.Text:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), size, "OUTLINE")
+  end
 
   return btn
 
@@ -81,7 +97,15 @@ function Win:CreateTitleBar(parent, height)
   titlebar.title:SetJustifyV("MIDDLE")
   function titlebar:SetTitle(text)
 
+    if not text then text = "Titlebar" end
     titlebar.title:SetText(text)
+
+  end
+
+  function titlebar:SetFontSize(size)
+
+    if not size then size = 15 end
+    titlebar.title:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), size, 'OUTLINE')
 
   end
 

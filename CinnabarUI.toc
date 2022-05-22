@@ -4,6 +4,7 @@
 ## Author: HlafSyp
 ## X-oUF: CinnabaroUF
 ## Version: 0.2
+## SavedVariables: CinnabarDB
 
 # Libraries
 Libraries/LibStub/LibStub.lua
@@ -53,6 +54,7 @@ Modules/Tooltip/Tooltip.lua
 # Modules
 Modules/UnitFrames/Tags.lua
 Modules/UnitFrames/Unitframes.lua
+Modules/UnitFrames/Options.lua
 
 Modules/Databars/Databars.lua
 

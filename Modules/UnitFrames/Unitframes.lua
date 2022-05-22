@@ -6,7 +6,7 @@ if not true--[[Cfg.config.Modules["UnitFrames"]--]] then return end
 local oUF = select(2,...).oUF
 local uf = Module["UnitFrames"]
 uf.Frames = {}
-local cfg = Cfg:GetValue("UnitFrames")
+local cfg = Cfg.config.UnitFrames
 
 -- Creates a Statusbar frame, sets the neccessary oUF config options and returns the frame
 -- This function will always be called first when it comes to creating Unitframes
@@ -18,11 +18,11 @@ local cfg = Cfg:GetValue("UnitFrames")
 -- health (table) : Statusbar frame, to be used in driver function to register with oUF
 local function CreateHealthBar(self, unit)
 
-  local c = cfg[unit].HealthBar
+  local c = Cfg.config.UnitFrames[unit]
 
   -- Position and size
   local Health = CreateFrame('StatusBar', nil, self)
-  Health:SetHeight(c.Height)
+  Health:SetHeight(c.HealthBar.Height)
   Health:SetPoint('TOP')
   Health:SetPoint('LEFT')
   Health:SetPoint('RIGHT')
@@ -34,21 +34,21 @@ local function CreateHealthBar(self, unit)
   Background:SetTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
 
   -- Options
-  Health.colorTapping = c.colorTapping
-  Health.colorDisconnected = c.colorDisconnected
-  Health.colorClass = c.colorClass
-  Health.colorReaction = c.colorReaction
-  Health.colorHealth = c.colorHealth
+  Health.colorTapping = c.HealthBar.colorTapping
+  Health.colorDisconnected = c.HealthBar.colorDisconnected
+  Health.colorClass = c.HealthBar.colorClass
+  Health.colorReaction = c.HealthBar.colorReaction
+  Health.colorHealth = c.HealthBar.colorHealth
   Health.Smooth = true
 
   -- Make the background darker.
-  Background.multiplier = c.BgBrightness
+  Background.multiplier = c.HealthBar.BgBrightness
 
   -- Register it with oUF
   Health.bg = Background
 
   -- If the bar is disabled, hide it, so a reload  isn't needed when it is enabled again
-  if not c.Enabled then Health:Hide() end
+  if not c.HealthBar.Enabled then Health:Hide() end
 
   return Health
 
@@ -64,13 +64,13 @@ end
 -- power (table) : Statusbar frame, to be used in driver function to register with oUF
 local function CreatePowerBar(self, unit)
 
-  local c = cfg[unit].PowerBar
+  local c = Cfg.config.UnitFrames[unit]
 
 
   -- Position and size
   local Power = CreateFrame('StatusBar', nil, self)
-  Power:SetHeight(c.Height)
-  Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -c.Padding)
+  Power:SetHeight(c.PowerBar.Height)
+  Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -c.PowerBar.Padding)
   Power:SetPoint("LEFT")
   Power:SetPoint("RIGHT")
   Power:SetStatusBarTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
@@ -81,20 +81,20 @@ local function CreatePowerBar(self, unit)
   Background:SetTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
 
   -- Options
-  Power.frequentUpdates = c.frequentUpdates
-  Power.colorTapping = c.colorTapping
-  Power.colorDisconnected = c.colorDisconnected
-  Power.colorPower = c.colorPower
-  Power.colorClass = c.colorClass
-  Power.colorReaction = c.colorReaction
+  Power.frequentUpdates = c.PowerBar.frequentUpdates
+  Power.colorTapping = c.PowerBar.colorTapping
+  Power.colorDisconnected = c.PowerBar.colorDisconnected
+  Power.colorPower = c.PowerBar.colorPower
+  Power.colorClass = c.PowerBar.colorClass
+  Power.colorReaction = c.PowerBar.colorReaction
   Power.Smooth = true
   -- Make the background darker.
-  Background.multiplier = c.BgBrightness
+  Background.multiplier = c.PowerBar.BgBrightness
 
   Power.bg = Background
 
   -- If user doesn't want the bar, hide it so no reload is needed when they do
-  if not c.Enabled then Power:Hide() end
+  if not c.PowerBar.Enabled then Power:Hide() end
 
   -- Return it so that the driver function can handle the assignments
   return Power
@@ -111,9 +111,10 @@ end
 -- Backdrop (table) : A black box place behind the given frame
 local function CreateBackdrop(self, unit)
 
+  local c = Cfg.config.UnitFrames[unit]
+
   -- The following code is pretty much ripped from oUF_lumen
   -- It just looks so good, and is a nice base i would say
-  local c = cfg[unit]
   local Padding = c.BackdropInset
   local Backdrop = CreateFrame("Frame", nil, self, "BackdropTemplate")
   Backdrop:SetAllPoints(self)
@@ -149,12 +150,14 @@ end
 -- bar (table) : the bar given to PostCreate(bar) from oUF_AuraBars
 local function MakeSmallBar(unit, bar)
 
-  local pad = cfg[unit].BackdropInset
-  local IsMirrored = cfg[unit].Mirror
+  local c = Cfg.config.UnitFrames[unit]
+
+  local pad = c.BackdropInset
+  local IsMirrored = c.Mirror
   local p, rT, rP, xO, yO = bar:GetPoint(1)
   bar:ClearAllPoints()
   bar:SetWidth(bar:GetWidth() - (3 * pad))
-  bar:SetHeight(cfg[unit].AuraBar.Height * (3/11))
+  bar:SetHeight(c.AuraBar.Height * (3/11))
   bar:SetPoint(p, rT, rP, xO, yO)
 
   if IsMirrored then
@@ -214,14 +217,16 @@ end
 -- bar (table) : the bar given to PostCreate(bar)
 local function PostCreate(unit, bar)
 
-  local IsMirrored = cfg[unit].Mirror
-  local IsSmall = cfg[unit].AuraBar.SmallBar
+  local c = Cfg.config.UnitFrames[unit]
+
+  local IsMirrored = c.Mirror
+  local IsSmall = c.AuraBar.SmallBar
 
   -- Set up the stuff for the backdrop
   bar.backdrop = CreateFrame("Frame", nil, bar, "BackdropTemplate")
   bar.backdrop:SetAllPoints(bar)
   bar.backdrop:SetFrameLevel(bar:GetFrameLevel() == 0 and 0 or bar:GetFrameLevel() - 1)
-  local pad = cfg[unit].BackdropInset
+  local pad = c.BackdropInset
 
   -- Set the backdrop for the main bar
   bar.backdrop:SetBackdrop {
@@ -236,7 +241,7 @@ local function PostCreate(unit, bar)
     }
   }
   -- Make the backdrop black to match the rest of the frame
-  bar.backdrop:SetBackdropColor(0,0,0,cfg.BackdropOpacity)
+  bar.backdrop:SetBackdropColor(0,0,0,c.BackdropOpacity)
 
   -- Create a backdrop for the icon now,
   -- the backdrop is seperated into two so that small bar can be supported
@@ -254,7 +259,7 @@ local function PostCreate(unit, bar)
       bottom = -pad,
     }
   }
-  bar.icon.backdrop:SetBackdropColor(0,0,0,cfg.BackdropOpacity)
+  bar.icon.backdrop:SetBackdropColor(0,0,0,c.BackdropOpacity)
 
   -- Reanchor the icon to be on the left edge and bottom edge instead of the left and top by default
   -- this is to allow small bar to function correctly
@@ -284,12 +289,12 @@ local function PostCreate(unit, bar)
     -- This is done in post create cause AuraBars.gap looks like shit
     local p, rT, rP, xO, yO = bar:GetPoint(1)
     bar:ClearAllPoints()
-    bar:SetWidth(bar:GetWidth() - (cfg.BackdropInset * 3))
+    bar:SetWidth(bar:GetWidth() - (c.BackdropInset * 3))
     bar:SetPoint(p, rT, rP, xO, yO)
 
   end
 
-  bar.classColored = cfg[unit].AuraBar.ClassColoredBars
+  bar.classColored = c.AuraBar.ClassColoredBars
 
 
   -- Setup the tooltip for hovering over auras
@@ -313,7 +318,7 @@ end
 -- bar (string) : the bar given to PostCreate(bar)
 local function CreateAuraBars(self, unit)
 
-  local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
 
   -- Setup AuraBars element
   local AuraBars = CreateFrame("Frame", nil, self)
@@ -344,15 +349,10 @@ local function CreateAuraBars(self, unit)
             or Auras.B[spellId]
             or Auras.D[spellId]
             or Auras.RD[spellId])
-            and true
     end
 
 
   end
-
-  if not c.AuraBar.Enabled then AuraBars:Hide() end
-
-  return AuraBars
 
 end
 
@@ -368,7 +368,7 @@ end
 -- health   (FontString) : WoW's Fontstring object which is properly aligned
 local function AddHealthText(healthbar, unit)
 
-  local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
   local text = healthbar:CreateFontString(nil, 'ARTWORK')
   text:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), Round((c.Width * c.Height) *  (3/1000), 0), 'OUTLINE')
 
@@ -391,7 +391,7 @@ end
 -- name   (FontString) : WoW's Fontstring object which is properly aligned
 local function AddNameText(healthbar, unit)
 
-  local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
   -- local maxlevel = Cinnabar.data.MAX_LEVEL
   local name = healthbar:CreateFontString(nil, 'ARTWORK')
   name:SetFont(Cinnabar.lsm:Fetch('font','BebasNeue-Regular'), Round((c.Width * c.Height) *  (3/1000), 0), 'OUTLINE')
@@ -443,7 +443,7 @@ end
 -- self   (FontString) : This returns the table passed in to the function, modified
 local function AddText(self, unit)
 
-  local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
 
   self.Health.NameText = AddNameText(self.Health, unit)
   self.Health.healthText = AddHealthText(self.Health, unit)
@@ -473,7 +473,7 @@ end
 local function SetCastbarsColor(castbar, unit)
 
   local Class = select(2, UnitClass(unit))
-  local BgBrightness = cfg[unit].CastBar.BgBrightness
+  local BgBrightness = Cfg.config.UnitFrames[unit].CastBar.BgBrightness
   if Class == nil then Class = select(2, UnitClass('player')) end
   local colors = oUF.colors.class[Class]
   castbar:SetStatusBarColor(colors[1], colors[2], colors[3], 1)
@@ -484,7 +484,7 @@ end
 
 local function CreateCastBar(self, unit)
 
-  local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
   local Castbar = CreateFrame('StatusBar', nil, self)
   Castbar:SetSize(c.CastBar.Width, c.CastBar.Height)
   Castbar:SetPoint(c.CastBar.Point,
@@ -536,6 +536,7 @@ local function CreateCastBar(self, unit)
 
   Castbar.backdrop = CreateBackdrop(Castbar, unit)
   Castbar.PostCastStart = function(_)
+    if c.CastBar.Enabled then Castbar:Hide() end
     if Castbar.notInterruptible == true then
       local rgb =  {c.CastBar.UninteruptibleColors[1],
                     c.CastBar.UninteruptibleColors[2],
@@ -548,7 +549,7 @@ local function CreateCastBar(self, unit)
     end
   end
 
-  if not c.CastBar.Enabled then Castbar:Hide() end
+  -- if not c.CastBar.Enabled then Castbar:Hide() end
   return Castbar
 
 end
@@ -564,7 +565,7 @@ end
 function uf:RegisterUnit(self, unit)
 
 
-  local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
 
   self:EnableMouse(true)
   self:SetSize(c.Width, c.Height)
@@ -606,9 +607,8 @@ function uf:RegisterUnit(self, unit)
   end)
   self.Highlight:Hide()
 
-
   -- Hide the unitframe if user doesn't want frame to be created
-  if not cfg.Units[unit] then self:Hide() end
+  if not Cfg.config.UnitFrames.Units[unit] then self:Hide() end
 
 
 end
@@ -643,7 +643,7 @@ oUF:Factory(function(self)
     for i=1, #SingleUnits do
         -- Because I'm Still developing this stuff, I need to check to make sure the config stuff is actually there lol
         -- And you bet I'm leaving this in during release
-        if cfg.Units[SingleUnits[i]] and cfg[SingleUnits[i]].Width ~= nil then
+        if Cfg.config.UnitFrames.Units[SingleUnits[i]] and Cfg.config.UnitFrames[SingleUnits[i]].Width ~= nil then
             uf.Frames[SingleUnits[i]] = self:Spawn(SingleUnits[i])
         end
     end
