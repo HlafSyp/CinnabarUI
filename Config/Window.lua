@@ -130,8 +130,8 @@ function Win:CreateContainer(parent, width, height, name)
   Container.bg:SetAllPoints(Container)
   Container.bg:SetColorTexture(0.085, 0.085, 0.085, 0.8)
 
-  function Container:AddTitle(text)
-    Container.title = Win:CreateTitleBar(self)
+  function Container:AddTitle(text, height)
+    Container.title = Win:CreateTitleBar(self, height)
     Container:SetTitle(text)
   end
 
@@ -166,8 +166,18 @@ function Win:AddBackdrop(parent, inset)
 
 end
 
-function Win:CreateDropdown()
+local count = 1
+function Win:CreateDropdown(parent, initFunction, initialText)
 
+  -- Create the dropdown, and configure its appearance
+  local dropDown = CreateFrame("FRAME", "CinnabarDropDown" .. count, parent, "UIDropDownMenuTemplate")
+  UIDropDownMenu_SetWidth(dropDown, 200)
+  UIDropDownMenu_SetText(dropDown, initialText)
+  -- Create and bind the initialization function to the dropdown menu
+  UIDropDownMenu_Initialize(dropDown, initFunction)
+
+  count = count + 1
+  return dropDown
 
 end
 

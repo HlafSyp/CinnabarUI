@@ -44,11 +44,39 @@ function Cinnabar:OnInitialize()
   end
 
   -- Steal a Game Menu Button to make it our addon's
-  local btn = GameMenuButtonWhatsNew
+  local btn = CreateFrame("Button", "GameMenuButtonCinnabarUI", GameMenuFrame, "GameMenuButtonTemplate")
+  GameMenuButtonQuit:SetPoint("TOP", GameMenuButtonLogout, "BOTTOM", 0, -1)
+  GameMenuButtonContinue:SetPoint("TOP", GameMenuButtonQuit, "BOTTOM", 0, -16)
   btn.Text:SetText(string.format("|c%sCinnabarUI|r ", Cinnabar.data.COLORS.UI_FG.hex))
   btn:SetScript("OnClick", function()
     Cfg:Enable()
     ToggleGameMenu()
+  end)
+  GameMenuFrame:HookScript("OnShow", function()
+    local height = 359
+    if GameMenuButtonRatings:IsShown() then
+      btn:SetPoint("TOP", GameMenuButtonRatings, "BOTTOM", 0, -1)
+      height = height + 20
+    else
+      btn:SetPoint("TOP", GameMenuButtonAddons, "BOTTOM", 0, -1)
+    end
+
+    if GameMenuFrame.ElvUI ~= nil then
+      btn:SetPoint("TOP", GameMenuFrame.ElvUI, "BOTTOM", 0, -1)
+      height = height + 20
+    end
+
+    GameMenuButtonLogout:ClearAllPoints()
+    GameMenuButtonLogout:SetPoint("TOP", btn, "BOTTOM", 0, -16)
+    GameMenuFrame:SetHeight(height)
+
+  end)
+
+  btn:RegisterEvent("PLAYER_LOGOUT")
+  btn:HookScript("OnEvent", function(self, event)
+    if event == 'PLAYER_LOGOUT' then
+      Cfg:Disable()
+    end
   end)
 
 end
@@ -62,7 +90,8 @@ end
 
 function Cinnabar:OnDisable()
 
-  Cfg:SaveConfigToSV()
+  Cfg:Disable()
 
 
 end
+

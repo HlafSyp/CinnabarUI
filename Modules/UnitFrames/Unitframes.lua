@@ -1,8 +1,5 @@
 local Cinnabar, _, Cfg, Module = unpack(select(2,...))
 
--- If user doesn't want this module enabled then return early
-if not true--[[Cfg.config.Modules["UnitFrames"]--]] then return end
-
 local oUF = select(2,...).oUF
 local uf = Module["UnitFrames"]
 uf.Frames = {}
@@ -10,7 +7,7 @@ local cfg = Cfg.config.UnitFrames
 
 -- Creates a Statusbar frame, sets the neccessary oUF config options and returns the frame
 -- This function will always be called first when it comes to creating Unitframes
-
+---------------------------------------
 -- @ARGUMENTS
 -- self (table) : This is the frame created by oUF:Spawn(unit)
 -- unit (string) : Stringified unit name (player, target, focus, etc)
@@ -554,6 +551,11 @@ local function CreateCastBar(self, unit)
 
 end
 
+function uf:Refresh()
+
+
+end
+
 -- The main call used by core to register all the units
 -- Used more as a wrapper function to easily break apart each part of the unit frame
 ---------------------------------------
@@ -624,28 +626,44 @@ local Shared = function(self, unit)
 
 end
 
--- For some reason, I can't just place uf.RegisterUnit as the shared function
--- So I'll keep using the wrapper function and just route the call to the  proper function
-oUF:RegisterStyle("Blu", Shared)
-oUF:Factory(function(self)
+function uf:OnInitialize()
 
-    self:SetActiveStyle("Blu")
+  oUF:RegisterStyle("Cinnabar", Shared)
 
-    local SingleUnits = {
-      "player",
-      "target",
-      "targettarget",
-      "focus",
-      "focustarget",
-      "pet",
-  }
+  -- If user doesn't want this module enabled then return early
+  if Cfg.config.Modules["UnitFrames"] == false then uf:Disable() end
 
-    for i=1, #SingleUnits do
-        -- Because I'm Still developing this stuff, I need to check to make sure the config stuff is actually there lol
-        -- And you bet I'm leaving this in during release
-        if Cfg.config.UnitFrames.Units[SingleUnits[i]] and Cfg.config.UnitFrames[SingleUnits[i]].Width ~= nil then
-            uf.Frames[SingleUnits[i]] = self:Spawn(SingleUnits[i])
-        end
-    end
+end
 
-end)
+function uf:OnEnable()
+
+  -- If user doesn't want this module enabled then return early
+  if not Cfg.config.Modules["UnitFrames"] then return end
+
+  -- For some reason, I can't just place uf.RegisterUnit as the shared function
+  -- So I'll keep using the wrapper function and just route the call to the  proper function
+
+  oUF:Factory(function(self)
+
+      self:SetActiveStyle("Cinnabar")
+
+      local SingleUnits = {
+        "player",
+        "target",
+        "targettarget",
+        "focus",
+        "focustarget",
+        "pet",
+    }
+
+      for i=1, #SingleUnits do
+          -- Because I'm Still developing this stuff, I need to check to make sure the config stuff is actually there lol
+          -- And you bet I'm leaving this in during release
+          if Cfg.config.UnitFrames.Units[SingleUnits[i]] and Cfg.config.UnitFrames[SingleUnits[i]].Width ~= nil then
+              uf.Frames[SingleUnits[i]] = self:Spawn(SingleUnits[i])
+          end
+      end
+
+  end)
+
+end

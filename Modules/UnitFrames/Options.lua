@@ -11,8 +11,6 @@ local COLOR = Cinnabar.data.COLORS.UI_FG
 -- Section to change what specs have percentage power
 -- Section for each unit to control size/pos of frame
 
-local ufFrame
-
 local CLASSID = {
   ['DEATHKNIGHT'] = 6,
   ['DEMONHUNTER'] = 12,
@@ -27,3 +25,4 @@ local CLASSID = {
   ['WARLOCK'] = 9,
   ['WARRIOR'] = 1,
 }
+

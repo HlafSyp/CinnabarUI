@@ -26,22 +26,6 @@ local function GetProfileForCurrentCharacter()
 
 end
 
--- Simply copies the members of the SV
--- Into the Cfg Table
----------------------------------------
-local function LoadSavedVariableIntoCfg()
-  -- If CinnabarDB doesn't exist set them to empty tables
-  if not CinnabarDB then
-    CinnabarDB              = {}
-    CinnabarDB.profiles     = {}
-    CinnabarDB.profilekeys  = {}
-    CinnabarDB.globals      = {}
-  end
-  Cfg.profiles    = CinnabarDB.profiles
-  Cfg.profilekeys = CinnabarDB.profilekeys
-  Cfg.globals     =  CinnabarDB.globals
-end
-
 -- Copies missing members of the defaults table into the
 -- Given table
 ---------------------------------------
@@ -57,19 +41,18 @@ local function LoadDefaultsIntoTable(target, defaults)
 
   local cpy
   cpy = function(dst, src)
-    local t = dst
     for key, val in pairs(src) do
 
       if type(val) == 'table' then
-        t[key] = {}
-        cpy(t[key], val)
+        dst[key] = {}
+        cpy(dst[key], val)
       else
-        t[key] = val
+        dst[key] = val
       end
 
     end
 
-    return t
+    return dst
 
   end
 
@@ -95,21 +78,23 @@ local function LoadProfileIntoTable(target, profile)
     if not profile then return target end
   end
 
-  local cpy = function(dst, src)
-    for key, val in pairs(profile) do
+  local cpy
+  cpy = function(dst, src)
+    for key, val in pairs(src) do
 
       if type(val) == 'table' then
-        dst[key] = {}
+        dst[key] = dst[key] or {}
         cpy(dst[key], val)
       else
         dst[key] = val
       end
 
     end
+    return dst
 
   end
 
-  cpy(target,profile)
+  target = cpy(target,profile)
 
   return target
 
@@ -132,9 +117,9 @@ local function PruneTableOfDefaults(target, defaults)
   prune = function(dst,src)
 
     for key, val in pairs(dst) do
-      -- If val is a nested table, prune it
+      -- If val is a table, prune it
       if type(val) == 'table' then
-        prune(dst[key], src[key])
+        prune(val, src[key])
         -- Check if table is empty
         if next(val) == nil then
           dst[key] = nil
@@ -143,6 +128,8 @@ local function PruneTableOfDefaults(target, defaults)
         dst[key] = nil
       end
     end
+
+    return dst
   end
 
   return prune(target, defaults)
@@ -200,6 +187,8 @@ end
 -- target           (table)     : The table to delete
 local function DeleteTable(target)
 
+  if not target then return end
+
   local a
   a = function(dst)
 
@@ -220,15 +209,53 @@ local function DeleteTable(target)
 
 end
 
+-- Simply copies the members of the SV
+-- Into the Cfg Table
+---------------------------------------
+local function LoadSavedVariableIntoCfg()
+  -- If CinnabarDB doesn't exist set them to empty tables
+  if not CinnabarDB then
+    CinnabarDB              = {}
+    CinnabarDB.profiles     = {}
+    CinnabarDB.profilekeys  = {}
+    CinnabarDB.globals      = {}
+  end
+  Cfg.profiles    = CopyTable(CinnabarDB.profiles)
+  Cfg.profilekeys = CopyTable(CinnabarDB.profilekeys)
+  Cfg.globals     = CopyTable(CinnabarDB.globals)
+end
+
+function Cfg:GetNumberOfProfiles()
+
+  local count = 0
+  for key, _ in pairs(Cfg.profiles) do
+    count = count + 1
+  end
+
+  return count
+
+end
+
+function Cfg:CreateAceGUITable()
+
+  local tbl = {}
+  for key, _ in pairs(Cfg.profiles) do
+    tbl[key] = key
+  end
+
+  return tbl
+
+end
+
 -- Creates a new profile of the given or default name
 -- Default Name is in the form of "[Character Name] - [Realm]"
 ---------------------------------------
 -- @ARGUMENTS
--- profile_table  ? (table)     : The current profile table
 -- name           ? (string)    : The defaults table to be compared against
+-- profile_table  ? (table)     : The current profile table
 -- @RETURNS
 -- profile (table) : The table that was created
-function Cfg:CreateNewProfile(profile_table, name)
+function Cfg:CreateNewProfile(name, profile_table)
 
   -- Setup some defaults
   if type(profile_table) ~= 'table' then
@@ -242,9 +269,18 @@ function Cfg:CreateNewProfile(profile_table, name)
   -- And need to be removed
   profile_table = PruneTableOfDefaults(profile_table)
 
-  Cfg.profiles[name] = profile_table
+  Cfg.profiles[name] = profile_table or {}
+  Cfg:LoadProfile(name)
 
   return Cfg.profiles[name]
+
+end
+
+function Cfg:ResetProfile(profile_key)
+
+  DeleteTable(Cfg.profiles[profile_key])
+  Cfg.profiles[profile_key] = {}
+  Cfg:LoadProfile(profile_key)
 
 end
 
@@ -270,6 +306,11 @@ function Cfg:DeleteProfile(profile_key)
 
   a(Cfg.profiles[profile_key])
   Cfg.profiles[profile_key] = nil
+
+  if profile_key == Cfg.current_profile then
+    local key, _ = next(Cfg.profiles)
+    Cfg:LoadProfile(key)
+  end
 
 end
 
@@ -300,14 +341,14 @@ function Cfg:LoadProfile(profile_key)
 
   -- Check if the profile_key actually exists
   if type(Cfg.profiles[profile_key]) ~= 'table' then return nil end
-
   -- Wipe the config table so no lingering options persist
   DeleteTable(Cfg.config)
 
+  -- Load the defaults into the table
+  Cfg.config = CopyTable(Cfg.defaults)
+
   -- Load the new profile into the table
   Cfg.config = LoadProfileIntoTable(Cfg.config, Cfg.profiles[profile_key])
-
-  Cfg.config = LoadDefaultsIntoTable(Cfg.config)
   Cfg:Refresh()
 
   Cfg.profilekeys[CreateProfileNameByCharacterName()] = profile_key
@@ -329,10 +370,20 @@ function Cfg:SaveProfile(profile_key)
 
   -- If the table is empty, aka no difference from the defaults table,
   -- don't save it
-  if not tbl or next(tbl) == nil then
-    Cfg.profiles[profile_key] = nil
+  -- if not tbl or next(tbl) == nil then
+  --   Cfg.profiles[profile_key] = nil
+  -- end
+  Cfg.profiles[profile_key] = tbl or {}
+
+end
+
+function Cfg:PruneEmptyProfiles()
+
+  for key, val in pairs(Cfg.profiles) do
+    if next(val) == nil then
+      Cfg.profiles[key] = nil
+    end
   end
-  Cfg.profiles[profile_key] = tbl
 
 end
 
@@ -344,7 +395,7 @@ end
 -- @ARGUMENTS
 -- frame_function   (function)    : The function that creates the config frame
 -- module           (string)      : The name of the module
-function Cfg:RegisterModuleConfigFrame(frame_function, module)
+local function RegisterModuleConfigFrame(frame_function, module)
 
   assert(type(frame_function) == "function" and frame_function, "Function Cfg:RegisterModuleConfigFrame(frame_function, module) not given valid argument for parameter #1")
   assert(type(module) == "string" and module, "Function Cfg:RegisterModuleConfigFrame(frame_function, module) not given valid argument for parameter #2")
@@ -360,13 +411,20 @@ end
 -- @ARGUMENTS
 -- refresh_function   (function)    : The function that reloads the module
 -- module             (string)      : The name of the module
-function Cfg:RegisterRefreshFunction(refresh_function, module)
+local function RegisterRefreshFunction(refresh_function, module)
 
   -- Some error checking to make sure nothing wrong gets added to the RefreshFunction
   assert(type(refresh_function) == 'function', "Usage: Cfg:RegisterRefreshFunction(refresh_function, module), expected type 'function' for argument #1 got " .. type(refresh_function))
   assert(type(module) == 'string', "Usage: Cfg:RegisterRefreshFunction(refresh_function, module), expected type 'string' for argument #2 got " .. type(module))
 
   Cfg.RefreshFunction[module] = refresh_function
+
+end
+
+function Cfg:RegisterModuleWithCinnabar(frame_func, refresh_func, module_name)
+
+  RegisterModuleConfigFrame(frame_func, module_name)
+  RegisterRefreshFunction(refresh_func, module_name)
 
 end
 
@@ -377,7 +435,7 @@ end
 ---------------------------------------
 function Cfg:Refresh()
 
-  for _, val in pairs(RefreshFunction) do
+  for _, val in pairs(RefreshFunction or {}) do
     val()
   end
 
@@ -390,12 +448,27 @@ end
 function Cfg:SaveConfigToSV()
 
   local profile_key = Cfg.current_profile
-  SaveProfile(profile_key)
+  Cfg:SaveProfile(profile_key)
 
   -- Copy Database entries into Saved Variable
-  CinnabarDB.profiles     = LoadProfileIntoTable(CinnabarDB.profiles,     Cfg.profiles)
-  CinnabarDB.profilekeys  = LoadProfileIntoTable(CinnabarDB.profilekeys,  Cfg.profilekeys)
-  CinnabarDB.globals      = LoadProfileIntoTable(CinnabarDB.globals,      Cfg.globals)
+  CinnabarDB.profiles     = CopyTable(Cfg.profiles)
+  CinnabarDB.profilekeys  = CopyTable(Cfg.profilekeys)
+  CinnabarDB.globals      = CopyTable(Cfg.globals)
+
+end
+
+function Cfg:ImportProfileString(profile_string)
+
+  local success, table = Cfg:Deserialize(profile_string)
+  for key, val in pairs(table) do
+    print(val)
+  end
+
+end
+
+function Cfg:CreateProfileString()
+
+  return Cfg:Serialize(Cfg.profiles[Cfg.current_profile])
 
 end
 
@@ -410,18 +483,18 @@ function Cfg:OnInitialize()
   local profile_key = Cfg.profilekeys[key]
 
   -- If the key doesn't exist, set the character to the default key
-  if type(profile_key) ~= 'string' then
-    Cfg.profilekeys[key] = 'default'
-    profile_key = 'default'
-
-    -- Check if default profile even exists
-    if type(Cfg.profiles[profile_key]) == 'nil' then
-      Cfg.profiles[profile_key] = {}
-    end
+  if type(profile_key) ~= 'string' or Cfg.profiles[profile_key] == nil then
+    Cfg.profilekeys[key] = 'Default'
+    profile_key = 'Default'
   end
 
-  -- Load the profile into the config table
-  LoadProfileIntoTable(Cfg.config, Cfg.profiles[profile_key])
+  -- Check if default profile even exists just to ensure it always does
+  if type(Cfg.profiles['Default']) == 'nil' then
+    Cfg.profiles['Default'] = {}
+  end
+
+  Cfg:LoadProfile(profile_key)
+  Cfg.current_profile = profile_key
 
   Cfg:Disable()
 
@@ -429,22 +502,12 @@ end
 
 function Cfg:OnEnable()
 
-  Cfg:SaveProfile('default')
-
-  -- If this module is enabled, the config menu needs to be opened
-  -- So check if it already has been made
-  -- since frames can't be deleted
-  -- and show it, or create it if it hasn't been created
-  if Cfg.Container then
-    Cfg.Container:Show()
-  else
-    Cfg.Container = Cfg:CreateConfigMenu()
-  end
+  Cfg:CreateConfigMenu()
 
 end
 
 function Cfg:OnDisable()
 
-  if Cfg.Container then Cfg.Container:Hide() end
+  Cfg:SaveConfigToSV()
 
 end
