@@ -184,7 +184,7 @@ Cfg.defaults = {
     },
     PercentagePower = {
       ['DEATHKNIGHT'] = {
-        false, -- Blood
+        true, -- Blood
         true, -- Frost
         true, -- Unholy
       },
@@ -194,7 +194,7 @@ Cfg.defaults = {
       },
       ['DRUID'] = {
         true, -- Balance
-        false, -- Feral
+        true, -- Feral
         true, -- Guardian
         true, -- Resto
       },
@@ -250,10 +250,11 @@ Cfg.defaults = {
       -------------------------------------------------------
       ------ General Frame Options
       -------------------------------------------------------
+      Lock = true,                    -- DEFAULT: true
       Width = 200,                    -- DEFAULT: 200
       Height = 25,                    -- DEFAULT: 30
       Anchor = "RIGHT",               -- DEFAULT: "RIGHT"
-      ParentFrame = "UIParent",         -- DEFAULT: UIParent
+      ParentFrame = "UIParent",       -- DEFAULT: UIParent
       ParentAnchor = "CENTER",        -- DEFAULT: "CENTER"
       OffsetX = -200,                 -- DEFAULT: -200
       OffsetY = -200,                 -- DEFAULT: -200
@@ -311,6 +312,7 @@ Cfg.defaults = {
       -------------------------------------------------------
       CastBar = {
         Enabled = true,             -- DEFAULT: true
+        Lock = true,
         Height = 20,
         Width = 500,
         BgBrightness = 0.5,
@@ -326,6 +328,7 @@ Cfg.defaults = {
       -------------------------------------------------------
       ------ General Frame Options
       -------------------------------------------------------
+      Lock = true,                    -- DEFAULT: true
       Width = 200,                    -- DEFAULT: 200
       Height = 25,                    -- DEFAULT: 30
       Anchor = "LEFT",                -- DEFAULT: "RIGHT"
@@ -387,6 +390,7 @@ Cfg.defaults = {
       -------------------------------------------------------
       CastBar = {
         Enabled = true,             -- DEFAULT: true
+        Lock = true,
         Height = 20,
         Width = 400,
         BgBrightness = 0.5,

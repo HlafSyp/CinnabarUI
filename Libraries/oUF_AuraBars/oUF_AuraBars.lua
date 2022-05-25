@@ -94,10 +94,10 @@ local function FormatTime(timeInSec)
 	end
 end
 
--- (HlafSyp, BluUI Creator) Since I color the names of debuffs
+-- (HlafSyp, CinnabarUI Creator) Since I color the names of debuffs
 -- Needed a function which could convert RGB to hex to be used in FontStrings
 -- And I didn't want to modify my oUF library so I added it to  oUF_AuraBars.lua
--- It isn't perfect but fuck lua 
+-- It isn't perfect but fuck lua
 
 
 --[[
@@ -153,7 +153,7 @@ local function CreateAuraBar(oUF, anchor)
 	if auraBarParent.spellTimeObject then
 		statusBar.spelltime:SetFontObject(auraBarParent.spellTimeObject)
 	else
-		-- (HlafSyp, BluUI Creator) Made it so that the text would have outlines to improve readability
+		-- (HlafSyp, CinnabarUI Creator) Made it so that the text would have outlines to improve readability
 		statusBar.spelltime:SetFont(auraBarParent.spellTimeFont or [[Fonts\FRIZQT__.TTF]], auraBarParent.spellTimeSize or 10, 'OUTLINE')
 	end
 	statusBar.spelltime:SetTextColor(1 ,1, 1)
@@ -165,7 +165,7 @@ local function CreateAuraBar(oUF, anchor)
 	if auraBarParent.spellNameObject then
 		statusBar.spellname:SetFontObject(auraBarParent.spellNameObject)
 	else
-		-- (HlafSyp, BluUI Creator) Made it so that the text would have outlines to improve readability
+		-- (HlafSyp, CinnabarUI Creator) Made it so that the text would have outlines to improve readability
 		statusBar.spellname:SetFont(auraBarParent.spellNameFont or [[Fonts\FRIZQT__.TTF]], auraBarParent.spellNameSize or 10, 'OUTLINE')
 	end
 	statusBar.spellname:SetTextColor(1, 1, 1)
@@ -180,7 +180,7 @@ local function CreateAuraBar(oUF, anchor)
 	if auraBarParent.PostCreateBar then
 		auraBarParent.PostCreateBar(statusBar)
 	end
-	
+
 	return statusBar
 end
 
@@ -224,7 +224,7 @@ end
 local function GatherAuras(self, auras, lastAuraIndex, unit,  helpOrHarm)
 
 	for index = 1, 40 do
-		-- (HLafSyp, BluUI Creator) The returns of UnitAura() has changed
+		-- (HLafSyp, CinnabarUI Creator) The returns of UnitAura() has changed
 		-- rank is no longer returned as part of UnitAura() so it has been removed from all
 		-- places referencing it
 		-- and in it's place lie spellID
@@ -242,8 +242,8 @@ local function GatherAuras(self, auras, lastAuraIndex, unit,  helpOrHarm)
 			auras[lastAuraIndex].expirationTime = expirationTime
 			auras[lastAuraIndex].unitCaster = unitCaster
 			auras[lastAuraIndex].isStealable = isStealable
-			auras[lastAuraIndex].spellId = spellId -- (HlafSyp, BluUI Creator) Made this addition to the filter list so that my config file can be used
-			auras[lastAuraIndex].IsBuff = (helpOrHarm == 'HELPFUL') -- (HlafSyp, BluUI Creator)  Added this for the coloring of debuffs
+			auras[lastAuraIndex].spellId = spellId -- (HlafSyp, CInnabarUI Creator) Made this addition to the filter list so that my config file can be used
+			auras[lastAuraIndex].IsBuff = (helpOrHarm == 'HELPFUL') -- (HlafSyp, CinnabarUI Creator)  Added this for the coloring of debuffs
 																	-- As it sat, debuffs looked exactly the same as buffs, which made it hard to see what was what at a glance
 			auras[lastAuraIndex].noTime = (duration == 0 and expirationTime == 0)
 		end
@@ -263,7 +263,7 @@ local function Update(self, event, unit)
 	local auras = {}
 	local lastAuraIndex = 0
 
-	-- (HlafSyp, BluUI Creator) Because of the way UnitAura() works, a new function to gather all the auras needs to be used
+	-- (HlafSyp, CinnabarUI Creator) Because of the way UnitAura() works, a new function to gather all the auras needs to be used
 	-- So the for loop used to iterate over every aura slot is bumped to a function to allow  code to just be reused
 	auras, lastAuraIndex = GatherAuras(self, auras, lastAuraIndex, unit, "HELPFUL")
 	auras, lastAuraIndex = GatherAuras(self, auras, lastAuraIndex, unit, "HARMFUl")
@@ -271,13 +271,13 @@ local function Update(self, event, unit)
 	if self.AuraBars.sort then
 		table.sort(auras, type(self.AuraBars.sort) == 'function' and self.AuraBars.sort or sort)
 	end
-	
+
 	-- Show and configure bars for buffs/debuffs.
 	local bars = self.AuraBars.bars
 	for index = 1 , lastAuraIndex do
 		local aura = auras[index]
 		local bar = bars[index]
-		
+
 		if not bar then
 			bar = CreateAuraBar(self, index == 1 and self.AuraBars or bars[index - 1])
 			bars[index] = bar
@@ -315,10 +315,10 @@ local function Update(self, event, unit)
 			local debuffType = bar.aura.debuffType and bar.aura.debuffType or 'none'
 			r, g, b = DebuffTypeColor[debuffType].r, DebuffTypeColor[debuffType].g, DebuffTypeColor[debuffType].b
 		end
-		
+
 		-- Check if the classColored option has been saved onto the bar
 		-- Since annoyingly, the colors are updated every update call
-		-- (HlafSyp, BluUI Creator)
+		-- (HlafSyp, CinnabarUI Creator)
 		if bar.classColored then
 			local colors = oUF.colors.class[select(2,UnitClass(unit))]
 			bar:SetStatusBarColor(colors[1], colors[2], colors[3])

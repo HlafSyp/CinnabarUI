@@ -315,9 +315,7 @@ function Cfg:DeleteProfile(profile_key)
 end
 
 -- Copys the profile at the given key
--- to a new profile of name
--- "[profile_key] - Copy"
--- and loads it into the config
+-- to the current profile
 ---------------------------------------
 -- @ARGUMENTS
 -- profile_key    (table)     : The key of the profile to copy
@@ -325,12 +323,9 @@ function Cfg:CopyProfile(profile_key)
 
   -- Check if the profile_key actually exists
   if type(Cfg.profiles[profile_key]) ~= 'table' then return nil end
-
   local tbl = CopyTable(Cfg.profiles[profile_key])
-  local new_key = profile_key .. ' - Copy'
-  tbl = CreateNewProfile(tbl, new_key)
-  Cfg:LoadProfile(new_key)
-
+  Cfg.profiles[Cfg.current_profile] = tbl
+  Cfg:LoadProfile(Cfg.current_profile)
 end
 
 -- Loads the profile of the given key to the config
@@ -421,10 +416,24 @@ local function RegisterRefreshFunction(refresh_function, module)
 
 end
 
-function Cfg:RegisterModuleWithCinnabar(frame_func, refresh_func, module_name)
+function Cfg:RegisterModuleWithCinnabar(frame_func, refresh_func, module_name, tree_group)
 
-  RegisterModuleConfigFrame(frame_func, module_name)
+
+
+  if type(frame_func) == 'table' then
+    for k, v in pairs(frame_func) do
+      RegisterModuleConfigFrame(v, k)
+    end
+  else
+    RegisterModuleConfigFrame(frame_func, module_name)
+  end
+
   RegisterRefreshFunction(refresh_func, module_name)
+  if type(tree_group) == 'table' then
+    table.insert(Cfg.MainGroup[3].children, tree_group)
+  else
+    table.insert(Cfg.MainGroup[3].children, {value = module_name:lower(),  text = module_name})
+  end
 
 end
 
@@ -449,8 +458,10 @@ function Cfg:SaveConfigToSV()
 
   local profile_key = Cfg.current_profile
   Cfg:SaveProfile(profile_key)
-
   -- Copy Database entries into Saved Variable
+  DeleteTable(CinnabarDB.profiles)
+  DeleteTable(CinnabarDB.profilekeys)
+  DeleteTable(CinnabarDB.globals)
   CinnabarDB.profiles     = CopyTable(Cfg.profiles)
   CinnabarDB.profilekeys  = CopyTable(Cfg.profilekeys)
   CinnabarDB.globals      = CopyTable(Cfg.globals)
@@ -506,8 +517,12 @@ function Cfg:OnEnable()
 
 end
 
+function Cfg:UnLoad()
+  Cfg:SaveConfigToSV()
+end
+
 function Cfg:OnDisable()
 
-  Cfg:SaveConfigToSV()
+  Cfg:UnLoad()
 
 end

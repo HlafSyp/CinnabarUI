@@ -1,14 +1,15 @@
 local Cinnabar, Util, Cfg, _ = unpack(select(2,...))
 local oUF = select(2,...).oUF
 
-oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit, Shorten, precision)
+oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit)
 
     local health = UnitHealth(unit)
-
+    local Shorten = Cfg.config.UnitFrames[unit].HealthBar.ShortenHealthText
+    local precision = Cfg.config.UnitFrames[unit].HealthBar.HealthTextPrecision
     -- Because Tags are held in strings, the type of precision is a string rather than a number
     -- This is regardless of what type you make it in the config file
     if precision then precision = tonumber(precision) end
-    if Shorten == 'true' and precision then
+    if Shorten == true and precision then
         assert(type(precision) == "number", "Type given to oUF Tag function, ['Cinnabar:curhp'] parameter, precision invalid (expected number, got " .. type(precision) .. ")")
         if health < 10000 then
             return health
@@ -23,7 +24,7 @@ end
 
 oUF.Tags.Methods['Cinnabar:smartpower'] = function(unit, realUnit)
 
-    local AbsOrPerc = Cfg.defaults.UnitFrames.PercentagePower
+    local AbsOrPerc = Cfg.config.UnitFrames.PercentagePower
     local class = select(2,UnitClass(unit))
     local spec = GetSpecialization()
 
@@ -36,10 +37,11 @@ oUF.Tags.Methods['Cinnabar:smartpower'] = function(unit, realUnit)
     end
 end
 
-oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit, ColorText, Mirror)
+oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
 
     local name = UnitName(unit)
-
+    local ColorText = Cfg.config.UnitFrames[unit].ColorLevelText
+    local Mirror    = Cfg.config.UnitFrames[unit].Mirror
     -- Forgot that names can be long as hell
     -- This bit shortens the name text to a max of 7 Characters
     name = string.sub(name, 1, 7)
@@ -56,7 +58,7 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit, ColorText, Mir
         -- cause it's gonna be used in a few checks
         local playerLevel = UnitLevel('player')
         if level == -1 then
-            if level == -1 then level = '??' end
+            level = '??'
             level = string.format(hardTarget, level)
         elseif level + 5 < playerLevel then
             level = string.format(easyTarget, level)
@@ -71,7 +73,7 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit, ColorText, Mir
     -- If the level is capped, discard it, don't need to display shit that is assumed
     if level == Cinnabar.data.MAX_LEVEL then level = '' end
 
-    if Mirror == 'true' then
+    if Mirror == true then
         return string.format("%s %s", name, level)
     else
         return string.format("%s %s", level, name)

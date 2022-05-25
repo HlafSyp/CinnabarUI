@@ -1,7 +1,8 @@
-local Cinnabar, _, Cfg, Module = unpack(select(2,...))
+local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
+local MODULE_NAME = "UnitFrames"
 local oUF = select(2,...).oUF
-local uf = Module["UnitFrames"]
+local uf = Module[MODULE_NAME]
 uf.Frames = {}
 local cfg = Cfg.config.UnitFrames
 
@@ -315,41 +316,43 @@ end
 -- bar (string) : the bar given to PostCreate(bar)
 local function CreateAuraBars(self, unit)
 
-  local c = Cfg.config.UnitFrames[unit]
+  local c = Cfg.config.UnitFrames
 
   -- Setup AuraBars element
   local AuraBars = CreateFrame("Frame", nil, self)
   AuraBars:SetHeight(6)
-  AuraBars:SetWidth(c.Width)
+  AuraBars:SetWidth(c[unit].Width)
   AuraBars:SetPoint("BOTTOM", self, "TOP")
   -- Set properties
-  AuraBars.auraBarHeight = c.AuraBar.Height
+  AuraBars.auraBarHeight = c[unit].AuraBar.Height
   AuraBars.auraBarTexture = Cinnabar.lsm:Fetch("statusbar", "Simple")
   AuraBars.spellTimeFont = Cinnabar.lsm:Fetch("font", "BebasNeue-Regular")
-  AuraBars.spellTimeSize = Round(c.AuraBar.Height * 0.7, 0)
+  AuraBars.spellTimeSize = Round(c[unit].AuraBar.Height * 0.7, 0)
   AuraBars.spellNameFont = Cinnabar.lsm:Fetch("font", "BebasNeue-Regular")
-  AuraBars.spellNameSize = Round(c.AuraBar.Height * 0.7, 0)
-  AuraBars.spacing = c.AuraBar.Spacing
+  AuraBars.spellNameSize = Round(c[unit].AuraBar.Height * 0.7, 0)
+  AuraBars.spacing = c[unit].AuraBar.Spacing
   AuraBars.PostCreateBar = function(bar)
     PostCreate(unit, bar)
   end
   AuraBars.filter = function(_,_,_, _, _, _, _, _, spellId)
 
-    local Auras = cfg.Auras
     -- I turn  unit into a lowercase string cause I want to make 100% sure the string will match my condition
     -- I'm pretty sure oUF gives me an all lowercase string anyways but can never be to safe
     if string.lower(unit) == 'player' then
-      return (Auras.CB[spellId] or Auras.B[spellId] or Auras.D[spellId]) and true
+      return (c.Auras.CB[spellId] or c.Auras.B[spellId] or c.Auras.D[spellId]) and true
     elseif string.lower(unit) == 'target' then
-      return  (Auras.CB[spellId]
-            or Auras.CD[spellId]
-            or Auras.B[spellId]
-            or Auras.D[spellId]
-            or Auras.RD[spellId])
+      return  (c.Auras.CB[spellId]
+            or c.Auras.CD[spellId]
+            or c.Auras.B[spellId]
+            or c.Auras.D[spellId]
+            or c.Auras.RD[spellId])
+            and true
     end
 
 
   end
+
+  return AuraBars
 
 end
 
@@ -367,12 +370,18 @@ local function AddHealthText(healthbar, unit)
 
   local c = Cfg.config.UnitFrames[unit]
   local text = healthbar:CreateFontString(nil, 'ARTWORK')
-  text:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), Round((c.Width * c.Height) *  (3/1000), 0), 'OUTLINE')
+  text:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), c.HealthBar.FontSize or Round((c.Width * c.Height) *  (3/1000), 0), 'OUTLINE')
 
   if healthbar:GetFillStyle() == 'REVERSE' then
     text:SetPoint('LEFT', healthbar, 'LEFT', 2, 0)
   else
     text:SetPoint('RIGHT', healthbar, 'RIGHT', -2, 0)
+  end
+
+  function text:SetFontSize(size)
+
+    self:SetFont(Cinnabar.lsm:Fetch('font','BebasNeue-Regular'), size, 'OUTLINE')
+
   end
 
   return text
@@ -391,7 +400,7 @@ local function AddNameText(healthbar, unit)
   local c = Cfg.config.UnitFrames[unit]
   -- local maxlevel = Cinnabar.data.MAX_LEVEL
   local name = healthbar:CreateFontString(nil, 'ARTWORK')
-  name:SetFont(Cinnabar.lsm:Fetch('font','BebasNeue-Regular'), Round((c.Width * c.Height) *  (3/1000), 0), 'OUTLINE')
+  name:SetFont(Cinnabar.lsm:Fetch('font','BebasNeue-Regular'), c.HealthBar.FontSize or Round((c.Width * c.Height) *  (3/1000), 0), 'OUTLINE')
 
   -- I hoped this would better align the text with the center of the bar
   -- but it doesn't seem to do anything,
@@ -399,6 +408,12 @@ local function AddNameText(healthbar, unit)
   name:SetPoint('BOTTOM')
   name:SetPoint('TOP')
   name:SetJustifyV("CENTER")
+
+  function name:SetFontSize(size)
+
+    self:SetFont(Cinnabar.lsm:Fetch('font','BebasNeue-Regular'), size, 'OUTLINE')
+
+  end
 
   if c.Mirror then
     name:SetPoint('RIGHT')
@@ -417,15 +432,21 @@ end
 -- unit      (string) : Stringified version of the unitID (player, target, etc)
 -- @RETURNS
 -- power   (FontString) : WoW's Fontstring object which is properly aligned
-local function AddPowerText(powerbar, _)
+local function AddPowerText(powerbar, unit)
 
-  -- local c = cfg[unit]
+  local c = Cfg.config.UnitFrames[unit]
   local power = powerbar:CreateFontString(nil, "ARTWORK")
-  power:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'), 13, 'OUTLINE')
+  power:SetFont(Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular'),  c.PowerBar.FontSize or 13, 'OUTLINE')
 
   -- Use the long version of SetPoint so I can change alignment correctly cause I know
   -- it will be fucked up guaranteed later
   power:SetPoint("CENTER", powerbar, 'CENTER', 0, 0)
+
+  function power:SetFontSize(size)
+
+    self:SetFont(Cinnabar.lsm:Fetch('font','BebasNeue-Regular'), size, 'OUTLINE')
+
+  end
 
   return power
 
@@ -444,20 +465,18 @@ local function AddText(self, unit)
 
   self.Health.NameText = AddNameText(self.Health, unit)
   self.Health.healthText = AddHealthText(self.Health, unit)
-  local Shorten, precision = c.HealthBar.ShortenHealthText, c.HealthBar.HealthTextPrecision
-  local Mirror, ColorText = c.Mirror, c.HealthBar.ColorLevelText
-  -- This is a shit work around to not being able to concatenate boolean values to strings
-  if Shorten then Shorten = 'true'
-  else Shorten = 'false' end
-  if ColorText then ColorText = 'true'
-  else ColorText = 'false' end
-  if Mirror then Mirror = 'true'
-  else Mirror = 'false' end
 
-  self:Tag(self.Health.healthText, '[Cinnabar:curhp(' .. Shorten .. ', ' .. precision .. ')]')
-  self:Tag(self.Health.NameText, string.format("[Cinnabar:smartname(%s,%s)]", ColorText, Mirror))
+  function self.Health:SetFontSize(size)
+    self.NameText:SetFontSize(size)
+    self.healthText:SetFontSize(size)
+  end
+  self:Tag(self.Health.healthText, '[Cinnabar:curhp]')
+  self:Tag(self.Health.NameText, "[Cinnabar:smartname]")
 
   self.Power.PowerText = AddPowerText(self.Power, unit)
+  function self.Power:SetFontSize(size)
+    self.PowerText:SetFontSize(size)
+  end
   self:Tag(self.Power.PowerText, '[Cinnabar:smartpower]')
 
   -- This return is so unnecessary because lua is modifying the table directly and not a copy of the table
@@ -511,6 +530,7 @@ local function CreateCastBar(self, unit)
   Castbar.Icon = Castbar:CreateTexture(nil, 'OVERLAY')
   Castbar.Icon:SetSize(c.CastBar.Height, c.CastBar.Height)
   Castbar.Icon:SetPoint('TOPLEFT', Castbar, 'TOPLEFT')
+  Castbar.Icon:SetPoint('BOTTOMLEFT', Castbar, 'BOTTOMLEFT')
 
   -- Add Shield
   Castbar.Shield = Castbar:CreateTexture(nil, 'OVERLAY')
@@ -551,6 +571,30 @@ local function CreateCastBar(self, unit)
 
 end
 
+function uf.SetFrameMovable(self)
+
+  if type(self) == 'string' then self = uf.Frames[self] end
+
+  self:SetMovable(true)
+  self:RegisterForDrag("LeftButton")
+  self:SetClampedToScreen(true)
+  self:HookScript("OnDragStart", function()
+    self:StartMoving()
+  end)
+  self:HookScript("OnDragStop", function()
+    self:StopMovingOrSizing()
+    local p, rT, rP, xO, yO = self:GetPoint()
+    Cfg.config.UnitFrames[self.unit].Anchor = p
+    Cfg.config.UnitFrames[self.unit].ParentAnchor = rP
+    Cfg.config.UnitFrames[self.unit].OffsetX = xO
+    Cfg.config.UnitFrames[self.unit].OffsetY = yO
+    Cfg:SaveProfile(Cfg.current_profile)
+  end)
+
+  return self
+
+end
+
 function uf:Refresh()
 
 
@@ -577,10 +621,15 @@ function uf:RegisterUnit(self, unit)
   self.Castbar = CreateCastBar(self, unit)
   self.Backdrop = CreateBackdrop(self, unit)
   self.AuraBars = CreateAuraBars(self, unit)
+  self.unit = unit
 -- Mirror the bars before adding text so the text can be properly alligned in their respective functions
   if c.Mirror then
     self.Health:SetReverseFill(true)
     self.Power:SetReverseFill(true)
+  end
+
+  if not c.Lock then
+    self = uf.SetFrameMovable(self)
   end
 
   -- Create the text elements
@@ -629,6 +678,34 @@ end
 function uf:OnInitialize()
 
   oUF:RegisterStyle("Cinnabar", Shared)
+  Cfg:RegisterModuleWithCinnabar(
+    {
+      [string.lower(MODULE_NAME)] = uf.CreateUnitFrameMenu,
+      ['units'] = uf.CreateUnitsMenu,
+      ['percentagepower'] = uf.CreatePercPowerMenu,
+      ['auras'] = uf.CreateAurasMenu
+    },
+    uf.Refresh,
+    MODULE_NAME,
+    {
+      value = "unitframes",
+      text = "UnitFrames",
+      children = {
+        {
+          value = 'units',
+          text = 'Units',
+        },
+        {
+          value = 'percentagepower',
+          text = 'Power as Percentage',
+        },
+        {
+          value = 'auras',
+          text = 'Buffs/Debuffs',
+        }
+      }
+    }
+  )
 
   -- If user doesn't want this module enabled then return early
   if Cfg.config.Modules["UnitFrames"] == false then uf:Disable() end
@@ -656,11 +733,11 @@ function uf:OnEnable()
         "pet",
     }
 
-      for i=1, #SingleUnits do
+      for i, v in ipairs(SingleUnits) do
           -- Because I'm Still developing this stuff, I need to check to make sure the config stuff is actually there lol
           -- And you bet I'm leaving this in during release
-          if Cfg.config.UnitFrames.Units[SingleUnits[i]] and Cfg.config.UnitFrames[SingleUnits[i]].Width ~= nil then
-              uf.Frames[SingleUnits[i]] = self:Spawn(SingleUnits[i])
+          if Cfg.config.UnitFrames.Units[v] and Cfg.config.UnitFrames[v].Width ~= nil then
+              uf.Frames[v] = self:Spawn(v)
           end
       end
 

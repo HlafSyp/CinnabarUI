@@ -3,7 +3,7 @@ local COLOR = Cinnabar.data.COLORS.UI_PRIMARY
 local TEXT_HIGHLIGHT = Cinnabar.data.COLORS.UI_FG
 
 local AceGUI = LibStub("AceGUI-3.0")
-local MainGroup = {
+Cfg.MainGroup = {
   {
     value = 'general',
     text = 'General'
@@ -16,19 +16,10 @@ local MainGroup = {
     value = 'modules',
     text = 'Modules',
     children = {
+
     }
   }
 }
-
-local function AddModulesToTreeGroup()
-
-  for key, _ in pairs(Cfg.ModuleFrames) do
-
-    MainGroup[3].children:insert({value = key:lower(), text = key})
-
-  end
-
-end
 
 local function CreateProfilesMenu(panel)
 
@@ -58,7 +49,20 @@ local function CreateProfilesMenu(panel)
   profileReset:SetWidth(150)
   profileReset:SetCallback("OnClick", function()
 
-    Cfg:ResetProfile(Cfg.current_profile)
+    StaticPopupDialogs["CINNABAR_RESET_CONFIRM"] = {
+      text = "Are you sure you want to delete the selected profile?",
+      button1 = "Yes",
+      button2 = "No",
+      OnAccept = function()
+        Cfg:ResetProfile(Cfg.current_profile)
+      end,
+      timeout = 0,
+      whileDead = true,
+      hideOnEscape = true,
+      preferredIndex = 3,
+    }
+
+    StaticPopup_Show("CINNABAR_RESET_CONFIRM")
 
   end)
   panel:AddChild(profileReset)
@@ -192,7 +196,7 @@ local function CreateProfilesMenu(panel)
       button1 = "Yes",
       button2 = "No",
       OnAccept = function()
-        Cfg.CopyProfile(key)
+        Cfg:CopyProfile(key)
         widget:SetValue("")
         UpdateSelects()
       end,
@@ -287,8 +291,6 @@ end
 local CurrentPanel
 function Cfg:CreateConfigMenu()
 
-  AddModulesToTreeGroup()
-
   Cfg.ModuleFrames['general'] = CreateGeneralMenu
   Cfg.ModuleFrames['profiles'] = CreateProfilesMenu
   Cfg.ModuleFrames['modules'] = CreateModuleMenu
@@ -306,7 +308,7 @@ function Cfg:CreateConfigMenu()
   menu:SetHeight(600)
 
   local treeGroup = AceGUI:Create("TreeGroup")
-  treeGroup:SetTree(MainGroup)
+  treeGroup:SetTree(Cfg.MainGroup)
   treeGroup:SetFullHeight(true)
   treeGroup:SetCallback("OnTreeResize", function(width)
 
@@ -315,15 +317,29 @@ function Cfg:CreateConfigMenu()
   end)
   treeGroup:SetCallback("OnGroupSelected", function(widget, event, group)
 
+    widget:SetLayout("Flow")
     widget:ResumeLayout()
     widget:ReleaseChildren()
-    local module_func = Cfg.ModuleFrames[group]
+
+    local function split (inputstr, sep)
+      if sep == nil then
+              sep = "%s"
+      end
+      local t={}
+      for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+              table.insert(t, str)
+      end
+      return t
+    end
+
+    local path = split(group, '\001')
+
+    local module_func = Cfg.ModuleFrames[path[#path]]
     module_func(widget)
 
   end)
   treeGroup:SelectByValue('profiles')
   treeGroup:SetLayout("Flow")
-
   menu:AddChild(treeGroup)
 
 end

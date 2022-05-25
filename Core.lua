@@ -75,7 +75,7 @@ function Cinnabar:OnInitialize()
   btn:RegisterEvent("PLAYER_LOGOUT")
   btn:HookScript("OnEvent", function(self, event)
     if event == 'PLAYER_LOGOUT' then
-      Cfg:Disable()
+      Cfg:UnLoad()
     end
   end)
 
