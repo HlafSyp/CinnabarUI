@@ -943,7 +943,7 @@ function uf.CreateAurasMenu(panel)
       -- Check if it's a valid spell
       if name == nil then return end
 
-      Cfg.config.UnitFrames.Auras[group][tonumber(text)] = name or spellID
+      Cfg.config.UnitFrames.Auras[group][tonumber(text)] = name
       Cfg:SaveProfile(Cfg.current_profile)
       spellGroup:ReleaseChildren()
       CreateAuraList(spellGroup)
