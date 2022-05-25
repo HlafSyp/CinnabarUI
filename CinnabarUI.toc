@@ -3,7 +3,7 @@
 ## Notes: A small, minimalistic UI overhaul
 ## Author: HlafSyp
 ## X-oUF: CinnabaroUF
-## Version: 0.5
+## Version: 1.5
 ## SavedVariables: CinnabarDB
 
 Libraries/Load_Libraries.xml

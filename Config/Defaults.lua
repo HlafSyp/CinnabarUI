@@ -305,6 +305,7 @@ Cfg.defaults = {
         Spacing = 6,                -- DEFAULT: 6
         SmallBar = true,            -- DEFAULT: true
         ClassColoredBars = true,    -- DEFAULT: true
+        BypassFilter = false,       -- DEFAULT: false
       },
 
       -------------------------------------------------------
@@ -383,6 +384,7 @@ Cfg.defaults = {
         Spacing = 6,                -- DEFAULT: 6
         SmallBar = true,            -- DEFAULT: true
         ClassColoredBars = true,    -- DEFAULT: true
+        BypassFilter = false,       -- DEFAULT: false
       },
 
       -------------------------------------------------------

@@ -51,7 +51,7 @@ local function RepBarUpdate()
     -- but only if it wasn't already visible, not on every frame
     -- The xpbar doesn't always get positioned correctly if the user reloads the interface and has
     -- a faction watched, so The xpbar has to be repositioned then as well
-    if Bars.XPBar then
+    if Bars.XPBar and Bars.XPBar:IsVisible() then
       if Bars.Repbar:GetAlpha() == 0 or select(2,Bars.XPBar:GetPoint(3)) ~= Bars.Repbar then
         local anchor = Bars.Repbar
         Bars.XPBar:ClearAllPoints()

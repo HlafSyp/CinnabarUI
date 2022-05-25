@@ -634,7 +634,18 @@ function uf.CreateUnitsMenu(panel)
           tg:AddChild(colors, fontSize)
 
         elseif group == 'AuraBar' then
-          enable:SetFullWidth(true)
+          local bypass = AceGUI:Create("CheckBox")
+          enable:SetRelativeWidth(0.25)
+          bypass:SetRelativeWidth(0.75)
+          bypass:SetLabel("Bypass Filters")
+          bypass:SetValue(Cfg.config.UnitFrames[unit].AuraBar.BypassFilter)
+          bypass:SetCallback("OnValueChanged", function(widget, event, value)
+
+            Cfg.config.UnitFrames[unit].AuraBar.BypassFilter = value
+            Cfg:SaveProfile(Cfg.current_profile)
+
+          end)
+          tg:AddChild(bypass, fontSize)
         end
 
       end)
@@ -928,12 +939,11 @@ function uf.CreateAurasMenu(panel)
     create:SetCallback("OnEnterPressed", function(widget, event, text)
 
       widget:SetText("")
-      if tonumber(text) == nil then return end
       local name = GetSpellInfo(tonumber(text))
       -- Check if it's a valid spell
       if name == nil then return end
 
-      Cfg.config.UnitFrames.Auras[group][tonumber(text)] = name
+      Cfg.config.UnitFrames.Auras[group][tonumber(text)] = name or spellID
       Cfg:SaveProfile(Cfg.current_profile)
       spellGroup:ReleaseChildren()
       CreateAuraList(spellGroup)

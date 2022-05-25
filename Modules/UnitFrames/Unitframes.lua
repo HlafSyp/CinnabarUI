@@ -296,14 +296,30 @@ local function PostCreate(unit, bar)
 
 
   -- Setup the tooltip for hovering over auras
-  bar:EnableMouse()
-  bar:SetScript("OnEnter", function(_)
+  bar.cover = CreateFrame("Frame", nil, bar)
+  bar.cover:SetPoint("TOPLEFT", bar.icon)
+  bar.cover:SetPoint("BOTTOMRIGHT")
+  if IsMirrored then
+    bar.cover:ClearAllPoints()
+    bar.cover:SetPoint("TOPRIGHT", bar.icon)
+    bar.cover:SetPoint("BOTTOMLEFT")
+  end
+  bar.cover:EnableMouse(true)
+  bar.cover:SetScript("OnEnter", function(_)
+    GameTooltip:SetOwner(bar, "ANCHOR_CURSOR")
     GameTooltip:SetUnitAura(unit, bar.aura.index)
-    GameTooltip:SetOwner(bar, "ANCHOR_TOP")
+    GameTooltip:Show()
   end)
 
-  bar:SetScript("OnLeave", function(_)
+  bar.cover:SetScript("OnLeave", function(_)
     GameTooltip:Hide()
+  end)
+
+  bar.cover:SetScript("OnMouseUp", function(self, button)
+    if unit ~= 'player' then return end
+    if button == 'RightButton' then
+      CancelUnitBuff(unit, bar.aura.index)
+    end
   end)
 
 end
@@ -339,14 +355,19 @@ local function CreateAuraBars(self, unit)
     -- I turn  unit into a lowercase string cause I want to make 100% sure the string will match my condition
     -- I'm pretty sure oUF gives me an all lowercase string anyways but can never be to safe
     if string.lower(unit) == 'player' then
-      return (c.Auras.CB[spellId] or c.Auras.B[spellId] or c.Auras.D[spellId]) and true
+      return (
+        c.Auras.CB[spellId] or
+        c.Auras.B[spellId] or
+        c.Auras.D[spellId]) or
+        c[unit].AuraBar.BypassFilter
     elseif string.lower(unit) == 'target' then
-      return  (c.Auras.CB[spellId]
-            or c.Auras.CD[spellId]
-            or c.Auras.B[spellId]
-            or c.Auras.D[spellId]
-            or c.Auras.RD[spellId])
-            and true
+      return  (
+        c.Auras.CB[spellId] or
+        c.Auras.CD[spellId] or
+        c.Auras.B[spellId] or
+        c.Auras.D[spellId] or
+        c.Auras.RD[spellId]) or
+        c[unit].AuraBar.BypassFilter
     end
 
 
