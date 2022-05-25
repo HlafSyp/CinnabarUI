@@ -307,7 +307,11 @@ local function PostCreate(unit, bar)
   bar.cover:EnableMouse(true)
   bar.cover:SetScript("OnEnter", function(_)
     GameTooltip:SetOwner(bar, "ANCHOR_CURSOR")
-    GameTooltip:SetUnitAura(unit, bar.aura.index, bar.IsBuff and 'HELPFUL' or 'HARMFUL')
+    if bar.aura.IsBuff then
+      GameTooltip:SetUnitAura(unit, bar.aura.index, 'HELPFUL')
+    else
+      GameTooltip:SetUnitAura(unit, bar.aura.index, 'HARMFUL')
+    end
     GameTooltip:Show()
   end)
 
