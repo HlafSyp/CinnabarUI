@@ -928,7 +928,11 @@ function uf.CreateAurasMenu(panel)
     delete:SetCallback("OnClick", function(widget, event)
 
       local id = selected.text:GetUserData("spellID")
-      Cfg.config.UnitFrames.Auras[group][id] = false
+      if Cfg.defaults.UnitFrames.Auras[group][id] then
+        Cfg.config.UnitFrames.Auras[group][id] = false
+      else
+        Cfg.config.UnitFrames.Auras[group][id] = nil
+      end
       Cfg:SaveProfile(Cfg.current_profile)
       spellGroup:ReleaseChildren()
       CreateAuraList(spellGroup)

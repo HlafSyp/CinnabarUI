@@ -47,7 +47,7 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
     name = string.sub(name, 1, 7)
 
     local level = UnitLevel(unit)
-
+---  324165 81141 59052 196770 55095 211793
     if unit == 'target' and ColorText == 'true' and level ~= Cinnabar.data.MAX_LEVEL then
         -- These are substitute strings for use in string.format
         local easyTarget =  '|cFF00FF00%s|r' -- Colors the text green

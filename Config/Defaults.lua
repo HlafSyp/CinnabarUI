@@ -419,11 +419,40 @@ Cfg.defaults = {
     }
   },
   Databar = {
-    EnableXP = true,
-    EnableHonor = true,
-    EnableReputation = true,
-    HideXPAtMaxLevel = true,    -- Hides the xp bar if the player is max level
-    TopAnchor = false,          -- Anchors the data bars to the top of the minimap instead of the bottom
+    HonorBar = {
+      Enabled = true,
+      Width = 105,
+      Height = 5,
+      Point = 'TOPRIGHT',
+      relativeTo = 'UIParent',
+      relativePoint = 'TOPRIGHT',
+      xOffset = -13,
+      yOffset = -116,
+      Colors = {r = 1, g = 0.24, b = 0},
+      BgBrightness = 0.5
+    },
+    XPBar = {
+      Enabled = true,
+      Width = 105,
+      Height = 5,
+      Point = 'TOPRIGHT',
+      relativeTo = 'UIParent',
+      relativePoint = 'TOPRIGHT',
+      xOffset = -13,
+      yOffset = -123,
+      Colors = {r = 0.58, g = 0, b = 0.55},
+      BgBrightness = 0.5
+    },
+    RepBar = {
+      Enabled = true,
+      Width = 105,
+      Height = 5,
+      Point = 'TOPRIGHT',
+      relativeTo = 'UIParent',
+      relativePoint = 'TOPRIGHT',
+      xOffset = -13,
+      yOffset = -270,
+    },
   },
 }
 

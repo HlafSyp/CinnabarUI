@@ -8,16 +8,17 @@ local type, assert, tostring, tonumber = type, assert, tostring, tonumber
 local string_format = string.format
 local string_sub = string.sub
 local string_len = string.len
+local string_match = string.match
 
 
 -- Prints a message into the default chat frame
 -- pretty self *insert aggressive word* explanatory
 function Util:Print(message)
 
-    if type(message) == "nil" then message = "nil" end
-    if type(message) == 'boolean' then message = message and "true" or "false" end
-    local msg_prefix = string_format("|c%sCinnabarUI|r: ", ADDON_PREFIX_COLOR)
-    DEFAULT_CHAT_FRAME:AddMessage(string_format("%s %s", msg_prefix, message))
+  if type(message) == "nil" then message = "nil" end
+  if type(message) == 'boolean' then message = message and "true" or "false" end
+  local msg_prefix = string_format("|c%sCinnabarUI|r: ", ADDON_PREFIX_COLOR)
+  DEFAULT_CHAT_FRAME:AddMessage(string_format("%s %s", msg_prefix, message))
 
 end
 
@@ -37,15 +38,30 @@ function Util:GetMountIDFromUnitAura(unit)
   for i=1, 40 do
   local spellID = select(10,UnitAura(unit, i))
   if not spellID then break end -- Break out early if there's no aura
-      for j=1, #Cinnabar.data.Mount.SpellIDs do
-          if Cinnabar.data.Mount.SpellIDs[j] == spellID then
-          mountID = Cinnabar.data.Mount.IDs[j]
-          end
+    for j=1, #Cinnabar.data.Mount.SpellIDs do
+      if Cinnabar.data.Mount.SpellIDs[j] == spellID then
+      mountID = Cinnabar.data.Mount.IDs[j]
       end
+    end
   end
 
   return mountID
 
+end
+
+-- Formats a number in the form, xxx,xxx,xxx, etc
+-- credit http://richard.warburton.it
+-- Obtained from http://lua-users.org/wiki/FormattingNumbers
+-- Because I hate dealing with regex expressions
+---------------------------------------
+-- @ARGUMENTS
+-- number    (number) : The number to format
+-- @RETURNS
+-- number    (string) : Returns the string form of the formated number
+function Util:FormatNumber(number)
+  assert(type(number) == 'number', "Usage: Util:FormatNumber(number) expected type 'number' for argument #1, got " .. type(number))
+  local left,num,right = string_match(number,'^([^%d]*%d)(%d*)(.-)$')
+  return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
 -- Shortens a number to the desired form and with the desired precision
@@ -71,11 +87,11 @@ function Util:ShortenNumber(form, precision, value)
   local affix
   value = tonumber(value) -- Convert value to a number so it can be used in math equations
   if form == 2 then
-      affix = 'M'
-      value = value / 1000000
+    affix = 'M'
+    value = value / 1000000
   elseif form == 3 then
-      affix = 'K'
-      value = value / 1000
+    affix = 'K'
+    value = value / 1000
   end
 
   value = tostring(value) -- Convert it to a string so the precision can be more easily controlled
@@ -86,11 +102,11 @@ function Util:ShortenNumber(form, precision, value)
   if j == nil then return value end
   -- Have to cap precision to the number of decimals
   if precision > (j - i) then
-      precision = (j - i)
+    precision = (j - i)
   end
   -- If precision is 0, then simply leave it there since the decimal doesn't need to be preserved then
   if precision ~= 0 then
-      precision = precision + 1
+    precision = precision + 1
   end
 
   value = string_sub(value, 1, (i - 1) + precision)
