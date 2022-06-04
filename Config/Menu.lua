@@ -288,7 +288,6 @@ local function CreateModuleMenu(panel)
 
 end
 
-local CurrentPanel
 function Cfg:CreateConfigMenu()
 
   Cfg.ModuleFrames['general'] = CreateGeneralMenu
@@ -304,8 +303,8 @@ function Cfg:CreateConfigMenu()
 
   end)
   menu:SetLayout("Flow")
-  menu:SetWidth(900)
-  menu:SetHeight(600)
+  menu:SetWidth(1024)
+  menu:SetHeight(768)
 
   local treeGroup = AceGUI:Create("TreeGroup")
   treeGroup:SetTree(Cfg.MainGroup)

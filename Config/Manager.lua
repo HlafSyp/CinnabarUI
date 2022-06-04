@@ -26,6 +26,27 @@ local function GetProfileForCurrentCharacter()
 
 end
 
+-- After changes to the defaults config layout
+-- Some functions return errors where there shouldn't be
+-- because entries were renamed
+-- This converts the old key to the new key
+-- To remain compatible with future changes
+-- All config breaking changes need to be listed in here
+---------------------------------------
+-- @ARGUMENTS
+-- key  (string)  : The key in question
+-- @RETURNS
+-- Key  (string)  : The new key in the defaults config
+local function LegacyCompat(key)
+  if key == 'CB' then return 'Class Buffs'
+  elseif key == 'CD' then return 'Class Debuffs'
+  elseif key == 'B' then return 'Buffs'
+  elseif key == 'D' then return 'Debuffs'
+  elseif key == 'RD' then return 'Raid/Dungeon'
+  else return key
+  end
+end
+
 -- Copies missing members of the defaults table into the
 -- Given table
 ---------------------------------------
@@ -119,12 +140,12 @@ local function PruneTableOfDefaults(target, defaults)
     for key, val in pairs(dst) do
       -- If val is a table, prune it
       if type(val) == 'table' then
-        prune(val, src[key])
+        prune(val, src[LegacyCompat(key)])
         -- Check if table is empty
         if next(val) == nil then
           dst[key] = nil
         end
-      elseif val == src[key] then
+      elseif val == src[LegacyCompat(key)] then
         dst[key] = nil
       end
     end

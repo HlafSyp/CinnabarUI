@@ -14,6 +14,9 @@ local Bars = Module["Databar"]
 -- bar  (table) : The status bar created
 local function CreateStatusBar(enableBackdrop, parent)
 
+  enableBackdrop = enableBackdrop or true
+  -- Setup defaults
+  parent = parent or UIParent
   local bar = CreateFrame("StatusBar", nil, parent)
   bar:SetStatusBarTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
   bar:SetMinMaxValues(0, 1)
@@ -78,8 +81,8 @@ local function CreateHonorBar()
   honor.bar:RegisterEvent("HONOR_LEVEL_UPDATE") -- Fires when honor level is changed
   honor.bar:RegisterEvent("HONOR_XP_UPDATE")    -- Fires when the amount of honor is changed
   honor.bar:SetScript("OnEvent", function(self, event, ...)
-  honor.bar:SetMinMaxValue(0, UnitHonorMax('player'))
-  honor.bar:SetValue(UnitHonor('player'))
+    honor.bar:SetMinMaxValues(0, UnitHonorMax('player'))
+    honor.bar:SetValue(UnitHonor('player'))
   end)
 
   honor.bar:EnableMouse(true)

@@ -24,7 +24,7 @@ local Auras = {
   -- not every "Important" buff from every class is in this list but I play
   -- every class to some degree and so most buffs will be here
   -------------------------------------------------------------------------------
-  CB = {
+  ["Class Buffs"] = {
   -- Death Knight
   [48707] = 'Anti-Magic Shell',
   [101568] = 'Dark Succor',
@@ -117,7 +117,7 @@ local Auras = {
   -- This list keeps track of things like
   -- Rip, sunfire, Moonfire, Rake, Fiery Brand, Paralysis, Cheap Shot, etc
   -------------------------------------------------------------------------------
-  CD = {},
+  ["Class Debuffs"] = {},
 
   -------------------------------------------------------------------------------
   -- Buffs
@@ -126,7 +126,7 @@ local Auras = {
   -- By default this list hold nothing, but is formatted the same way as with
   -- The other lists
   -------------------------------------------------------------------------------
-  B = {},
+  ["Buffs"] = {},
 
   -------------------------------------------------------------------------------
   -- Debuffs
@@ -135,7 +135,7 @@ local Auras = {
   --  By default this list holds nothing, but is formatted the same way as with
   -- the other lists
   -------------------------------------------------------------------------------
-  D = {},
+  ["Debuffs"] = {},
   -------------------------------------------------------------------------------
   -- Raid/Dungeon Buffs/Debuffs
   -- Shows on Enemy Mob's Target frame
@@ -148,12 +148,7 @@ local Auras = {
   -- By Default, this list will have nothing, unless I come across something
   -- THat I want in here
   -------------------------------------------------------------------------------
-  RD = {},
-  -------------------------------------------------------------------------------
-  -- Bypass Filters
-  -- This will bypass any of the filters above when set to true
-  -------------------------------------------------------------------------------
-  Bypass = false,
+  ["Raid/Dungeon"] = {},
 }
 
 Cfg.defaults = {
@@ -306,6 +301,12 @@ Cfg.defaults = {
         SmallBar = true,            -- DEFAULT: true
         ClassColoredBars = true,    -- DEFAULT: true
         BypassFilter = false,       -- DEFAULT: false
+        ShowNoTimeAuras = false,    -- DEFAULT: false
+        AuraList = {
+          "Class Buffs",
+          "Buffs",
+          "Debuffs",
+        },
       },
 
       -------------------------------------------------------
@@ -385,6 +386,14 @@ Cfg.defaults = {
         SmallBar = true,            -- DEFAULT: true
         ClassColoredBars = true,    -- DEFAULT: true
         BypassFilter = false,       -- DEFAULT: false
+        ShowNoTimeAuras = false,    -- DEFAULT: false
+        AuraList = {
+          "Class Buffs",
+          "Class Debuffs",
+          "Buffs",
+          "Debuffs",
+          "Raid/Dungeon",
+        },
       },
 
       -------------------------------------------------------

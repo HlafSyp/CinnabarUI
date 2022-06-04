@@ -354,25 +354,34 @@ local function CreateAuraBars(self, unit)
   AuraBars.PostCreateBar = function(bar)
     PostCreate(unit, bar)
   end
-  AuraBars.filter = function(_,_,_, _, _, _, _, _, spellId)
+  AuraBars.filter = function(name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, spellId)
 
-    -- I turn  unit into a lowercase string cause I want to make 100% sure the string will match my condition
-    -- I'm pretty sure oUF gives me an all lowercase string anyways but can never be to safe
-    if string.lower(unit) == 'player' then
-      return (
-        c.Auras.CB[spellId] or
-        c.Auras.B[spellId] or
-        c.Auras.D[spellId]) or
-        c[unit].AuraBar.BypassFilter
-    elseif string.lower(unit) == 'target' then
-      return  (
-        c.Auras.CB[spellId] or
-        c.Auras.CD[spellId] or
-        c.Auras.B[spellId] or
-        c.Auras.D[spellId] or
-        c.Auras.RD[spellId]) or
-        c[unit].AuraBar.BypassFilter
+    -- Checks the aura lists that the user has set in their config
+    -- Takes the unit it's checking for, and the
+    local function CheckLists(unit, ...)
+      if c[unit].AuraBar.BypassFilter then
+        if not c[unit].AuraBar.ShowNoTimeAuras and expirationTime == 0 then
+          return false
+        else
+          return true
+        end
+      end
+      local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, spellId = ...
+      local lists = Cfg.config.UnitFrames[unit].AuraBar.AuraList
+      -- Run through all the lists checking to see if the spell ID is in any of them
+      for index, val in ipairs(lists) do
+        -- Incase the list is actually a function, run the function
+        if type(c.Auras[val]) == 'function' then
+          return c.Auras[val](...)
+        elseif c.Auras[val][spellId] then
+          return true
+        end
+      end
+
+      return false
     end
+
+    return CheckLists(unit, name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, spellId)
 
 
   end

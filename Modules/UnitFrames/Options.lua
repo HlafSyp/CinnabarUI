@@ -791,11 +791,11 @@ function uf.CreateAurasMenu(panel)
   local tg = AceGUI:Create("TabGroup")
   -- Might add custom lists but for now, these 5 are the only aura lists available
   tg:SetTabs({
-    {value = 'CB', text = 'Class Buffs'},
-    {value = 'CD', text = 'Class Debuffs'},
-    {value = 'B',  text = 'Buffs'},
-    {value = 'D',  text = 'Debuffs'},
-    {value = 'RD', text = 'Raid/Dungeon Auras'},
+    {value = 'Class Buffs', text = 'Class Buffs'},
+    {value = 'Class Debuffs', text = 'Class Debuffs'},
+    {value = 'Buffs',  text = 'Buffs'},
+    {value = 'Debuffs',  text = 'Debuffs'},
+    {value = 'Raid/Dungeon', text = 'Raid/Dungeon Auras'},
   })
   panel:AddChild(tg)
   tg:SetCallback("OnGroupSelected", function(widget, event, group)
@@ -803,9 +803,9 @@ function uf.CreateAurasMenu(panel)
     -- selected is used to keep track of the spell that was selected
     -- for the delete button to properly delete the selected aura
     local selected
-    local spell = AceGUI:Create("SimpleGroup")
+    local spell = AceGUI:Create("InlineGroup")
     local spellGroup = AceGUI:Create("ScrollFrame")
-    local cont = AceGUI:Create("SimpleGroup")
+    local cont = AceGUI:Create("InlineGroup")
     local delete = AceGUI:Create("Button")
 
     -- This was pushed out into its own function
@@ -823,9 +823,20 @@ function uf.CreateAurasMenu(panel)
       i:SetRelativeWidth(0.25)
       local aura = AceGUI:Create("InteractiveLabel")
 
+      local function ShowTooltip()
+        GameTooltip:SetOwner(aura.frame, 'ANCHOR_CURSOR')
+        -- Weird thing happens where the name and cast time/duration of the spell
+        -- gets duplicated, IDK why it happens, but Clear the tooltip didn't fix it
+        -- I assume it has to do with how AddSpellByID works, but IDK
+        GameTooltip:ClearLines()
+        GameTooltip:AddSpellByID(aura:GetUserData('spellID'))
+        GameTooltip:Show()
+      end
+
       i:SetCallback("OnEnter", function(widget, event)
 
         aura:SetColor(PRIMCOL.r, PRIMCOL.g, PRIMCOL.b)
+        ShowTooltip()
 
       end)
       i:SetCallback("OnLeave", function(widget, event)
@@ -833,6 +844,8 @@ function uf.CreateAurasMenu(panel)
         if not selected or aura ~= selected.text then
           aura:SetColor(1,1,1)
         end
+
+        if GameTooltip:IsVisible() then GameTooltip:Hide() end
 
       end)
       i:SetCallback("OnClick", function(widget, event, button)
@@ -853,6 +866,7 @@ function uf.CreateAurasMenu(panel)
       aura:SetCallback("OnEnter", function(widget, event)
 
         widget:SetColor(PRIMCOL.r, PRIMCOL.g, PRIMCOL.b)
+        ShowTooltip()
 
       end)
       aura:SetCallback("OnLeave", function(widget, event)
@@ -860,6 +874,8 @@ function uf.CreateAurasMenu(panel)
         if not selected or widget ~= selected.text then
           widget:SetColor(1,1,1)
         end
+
+        if GameTooltip:IsVisible() then GameTooltip:Hide() end
 
       end)
       aura:SetCallback("OnClick", function(widget, event, button)
@@ -916,7 +932,6 @@ function uf.CreateAurasMenu(panel)
     spellGroup:SetLayout("Flow")
     spell:AddChild(spellGroup)
 
-
     cont:SetFullHeight(true)
     cont:SetRelativeWidth(0.5)
     cont:SetLayout("List")
@@ -963,7 +978,7 @@ function uf.CreateAurasMenu(panel)
     cont:AddChild(create)
 
   end)
-  tg:SelectTab("CB")
+  tg:SelectTab("Class Buffs")
 
 
 end

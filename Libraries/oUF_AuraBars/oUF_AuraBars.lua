@@ -174,7 +174,7 @@ local function CreateAuraBar(oUF, anchor)
 	statusBar.spellname:SetPoint'LEFT'
 	statusBar.spellname:SetPoint('RIGHT', statusBar.spelltime, 'LEFT')
 
-	-- Save the color option to the bar to be used in the update function (HlafSyp - BluUI)
+	-- Save the color option to the bar to be used in the update function (HlafSyp - CinnabarUI Creator)
 	statusBar.classColored = auraBarParent.classColored
 
 	if auraBarParent.PostCreateBar then

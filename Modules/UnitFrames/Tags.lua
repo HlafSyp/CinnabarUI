@@ -57,7 +57,7 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
         -- Define the players's level in a seperate variable
         -- cause it's gonna be used in a few checks
         local playerLevel = UnitLevel('player')
-        if level == -1 then
+        if level == -1 or level == '-1' then
             level = '??'
             level = string.format(hardTarget, level)
         elseif level + 5 < playerLevel then
