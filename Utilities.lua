@@ -12,7 +12,10 @@ local string_match = string.match
 
 
 -- Prints a message into the default chat frame
--- pretty self *insert aggressive word* explanatory
+-- pretty *insert aggressive word* self explanatory
+---------------------------------------
+-- @ARGUMENTS
+-- message (string) : The message to print to the chat frame
 function Util:Print(message)
 
   if type(message) == "nil" then message = "nil" end

@@ -6,8 +6,6 @@ local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 -- Mainly so that I could pull the mountID from unit aura function out from Tooltip.lua
 -- and into Utilities.lua
 ---------------------------------------
--- @ARGUMENTS
--- none
 -- @RETURNS
 -- mj (table) : The Compiled Mount Journal
 -- ms (table) : The Compiled Spell ID's of the mounts
