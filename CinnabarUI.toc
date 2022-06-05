@@ -27,6 +27,8 @@ Modules/UnitFrames/Options.lua
 
 Modules/Databars/Databars.lua
 
+Modules/Skin/Skinner.lua
+
 # Core Files
 Core.lua
 
