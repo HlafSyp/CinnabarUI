@@ -40,33 +40,23 @@ end
 oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
 
     local name = UnitName(unit)
-    local ColorText = Cfg.config.UnitFrames[unit].ColorLevelText
+    local ColorText = Cfg.config.UnitFrames[unit].HealthBar.ColorLevelText
     local Mirror    = Cfg.config.UnitFrames[unit].Mirror
     -- Forgot that names can be long as hell
     -- This bit shortens the name text to a max of 7 Characters
     name = string.sub(name, 1, 7)
 
-    local level = UnitLevel(unit)
----  324165 81141 59052 196770 55095 211793
-    if unit == 'target' and ColorText == 'true' and level ~= Cinnabar.data.MAX_LEVEL then
-        -- These are substitute strings for use in string.format
-        local easyTarget =  '|cFF00FF00%s|r' -- Colors the text green
-        local mediumTarget = '|cFF00FFFF%s|r' -- Colors the text yellow
-        local hardTarget = '|cFFFF5555%s|r' -- Colors the text a light red
+    local level             = UnitLevel(unit)
+    local effective_level   = UnitEffectiveLevel(unit)
 
-        -- Define the players's level in a seperate variable
-        -- cause it's gonna be used in a few checks
-        local playerLevel = UnitLevel('player')
+    if unit == 'target' and ColorText == true and level ~= Cinnabar.data.MAX_LEVEL then
+
+        local color = GetCreatureDifficultyColor(effective_level)
         if level == -1 or level == '-1' then
             level = '??'
-            level = string.format(hardTarget, level)
-        elseif level + 5 < playerLevel then
-            level = string.format(easyTarget, level)
-        elseif level > playerLevel + 15 then
-            level = string.format(hardTarget ,level)
-        elseif level > playerLevel + 10 then
-            level = string.format(mediumTarget ,level)
         end
+        color = ConvertRGBtoColorString(color)
+        level = color .. level
 
     end
 
