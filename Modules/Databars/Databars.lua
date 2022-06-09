@@ -12,12 +12,13 @@ local Bars = Module["Databar"]
 ---------------------------------------
 -- @RETURNS
 -- bar  (table) : The status bar created
-local function CreateStatusBar(enableBackdrop, parent)
+local function CreateStatusBar(enableBackdrop, parent, name)
 
-  enableBackdrop = enableBackdrop or true
   -- Setup defaults
+  enableBackdrop = enableBackdrop or true
   parent = parent or UIParent
-  local bar = CreateFrame("StatusBar", nil, parent)
+
+  local bar = CreateFrame("StatusBar", name, parent)
   bar:SetStatusBarTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
   bar:SetMinMaxValues(0, 1)
   bar:SetValue(0)
@@ -62,7 +63,7 @@ local function CreateHonorBar()
   -- for the functionality of the databar
   local cfg = Cfg.config.Databar.HonorBar
   local honor = {}
-  honor.bar = CreateStatusBar()
+  honor.bar = CreateStatusBar(nil, nil, 'CinnabarUIHonorBar')
 
   -- Setup the initial values of the honor bar
   honor.bar:SetStatusBarColor(cfg.Colors.r, cfg.Colors.g, cfg.Colors.b)
@@ -127,7 +128,7 @@ local function CreateXPBar()
   -- for the functionality of the databar
   local cfg = Cfg.config.Databar.XPBar
   local xp = {}
-  xp.bar = CreateStatusBar()
+  xp.bar = CreateStatusBar(nil, nil, 'CinnabarUIExpBar')
 
   -- Setup the rested XP portion of the bar
   xp.rested = CreateStatusBar(false, xp.bar)
@@ -168,7 +169,7 @@ local function CreateXPBar()
   xp.bar:EnableMouse(true)
 
   -- Register Tooltip Function
-  function xp.ShowTooltip()
+  function xp:ShowTooltip()
     local xpCur, xpMax, level = UnitXP('player'), UnitXPMax('player'), UnitLevel('player')
     local rested = GetXPExhaustion()
     GameTooltip:SetOwner(xp.bar, 'ANCHOR_CURSOR')
@@ -186,7 +187,7 @@ local function CreateXPBar()
         nil, nil, nil,
         1, 1, 1
       )
-  end
+    end
     GameTooltip:Show()
 
   end
@@ -203,7 +204,126 @@ end
 -- rep    (table) : A status bar tracking reputation
 local function CreateReputationBar()
 
+  -- Create a wrapper for the reputation bar that holds a few helper functions
+  -- for the functionality of the databar
+  local cfg = Cfg.config.Databar.RepBar
+  local rep = {}
+  rep.bar = CreateStatusBar(nil, nil, 'CinnabarUIRepBar')
 
+  function rep.GetStanding()
+    -- Simple lookup table to convert the standing saved in the metadata
+    -- to a string
+    local standings = {
+      [0] = 'Unknown',
+      [1] = 'Hated',
+      [2] = 'Hostile',
+      [3] = 'Unfriendly',
+      [4] = 'Neutral',
+      [5] = 'Friendly',
+      [6] = 'Honored',
+      [7] = 'Revered',
+      [8] = 'Exalted',
+    }
+
+    return standings[rep.standing]
+
+  end
+
+  function rep.ShowTooltip()
+
+    GameTooltip:SetOwner(rep.bar, 'ANCHOR_CURSOR')
+    GameTooltip:AddLine(rep.name)
+    GameTooltip:AddDoubleLine(rep:GetStanding(), Util:FormatNumber(rep.value or 0), Util:FormatNumber(rep.max or 0))
+
+  end
+
+  -- This entire function is literally ripped directly from
+  -- FrameXML/ReputationBar.lua
+  -- I only added/changed a few things to work better for my specific case
+  function rep.Update()
+
+    local name, reaction, minBar, maxBar, value, factionID = GetWatchedFactionInfo();
+    if name == nil then
+      rep.bar:SetAlpha(0)
+      return
+    else
+      rep.bar:SetAlpha(1)
+    end
+    local colorIndex = reaction;
+    local isCapped;
+    local friendshipID = GetFriendshipReputation(factionID);
+
+    if ( rep.factionID ~= factionID ) then
+        rep.factionID = factionID;
+        rep.friendshipID = GetFriendshipReputation(factionID);
+      end
+
+    -- do something different for friendships
+    local level;
+
+    if ( C_Reputation.IsFactionParagon(factionID) ) then
+      local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID);
+      minBar, maxBar  = 0, threshold;
+      value = currentValue % threshold;
+      if ( hasRewardPending ) then
+        value = value + threshold;
+      end
+    elseif ( friendshipID ) then
+      local friendID, friendRep, friendMaxRep, friendName, friendText, friendTexture, friendTextLevel, friendThreshold, nextFriendThreshold = GetFriendshipReputation(factionID);
+      level = GetFriendshipReputationRanks(factionID);
+      if ( nextFriendThreshold ) then
+        minBar, maxBar, value = friendThreshold, nextFriendThreshold, friendRep;
+      else
+        -- max rank, make it look like a full bar
+        minBar, maxBar, value = 0, 1, 1;
+        isCapped = true;
+      end
+      colorIndex = 5;   -- always color friendships green
+    else
+      level = reaction;
+      if ( reaction == MAX_REPUTATION_REACTION ) then
+        isCapped = true;
+      end
+    end
+
+    -- Normalize values
+    maxBar = maxBar - minBar;
+    value = value - minBar;
+    if ( isCapped and maxBar == 0 ) then
+      maxBar = 1;
+      value = 1;
+    end
+    minBar = 0;
+
+    rep.bar:SetValue(value);
+    rep.bar:SetMinMaxValues(minBar, maxBar)
+
+    local color = FACTION_BAR_COLORS[colorIndex];
+
+    rep.bar:SetStatusBarColor(color.r, color.g, color.b, 1);
+    rep.bar.background:SetVertexColor(
+      color.r * cfg.BgBrightness,
+      color.g * cfg.BgBrightness,
+      color.b * cfg.BgBrightness,
+      1
+    )
+    rep.isCapped = isCapped;
+    rep.name = name;
+    rep.value = value;
+    rep.max = maxBar;
+
+  end
+
+  rep.bar:SetPoint(cfg.Point, cfg.relativeTo, cfg.relativePoint, cfg.xOffset, cfg.yOffset)
+  rep.bar:SetSize(cfg.Width, cfg.Height)
+  rep.bar:EnableMouse(true)
+  rep.bar:HookScript("OnUpdate", rep.Update)
+  rep.bar:SetScript("OnEnter", rep.ShowTooltip)
+  rep.bar:SetScript("OnLeave", function() GameTooltip:Hide() end)
+  rep.bar:SetAlpha(1)
+  if not cfg.Enabled then
+    rep.bar:SetAlpha(0)
+  end
 
 end
 
@@ -217,5 +337,6 @@ function Bars:OnEnable()
 
   CreateHonorBar()
   CreateXPBar()
+  CreateReputationBar()
 
 end

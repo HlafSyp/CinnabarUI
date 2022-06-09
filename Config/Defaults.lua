@@ -460,7 +460,8 @@ Cfg.defaults = {
       relativeTo = 'UIParent',
       relativePoint = 'TOPRIGHT',
       xOffset = -13,
-      yOffset = -270,
+      yOffset = -130,
+      BgBrightness = 0.5
     },
   },
 }
