@@ -1,6 +1,11 @@
 local Cinnabar, Util, Cfg, _ = unpack(select(2,...))
 local oUF = select(2,...).oUF
 
+-- Pulled out of oUF_AuraBars.lua
+local function ShortenName(name, length)
+	return string.len(name) > length and string.gsub(name, '%s?(.)%S+%s', '%1. ') or name
+end
+
 oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit)
 
     local health = UnitHealth(unit)
@@ -43,8 +48,8 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
     local ColorText = Cfg.config.UnitFrames[unit].HealthBar.ColorLevelText
     local Mirror    = Cfg.config.UnitFrames[unit].Mirror
     -- Forgot that names can be long as hell
-    -- This bit shortens the name text to a max of 7 Characters
-    name = string.sub(name, 1, 7)
+    -- This bit shortens the name text
+    name = ShortenName(name, 7)
 
     local level             = UnitLevel(unit)
     local effective_level   = UnitEffectiveLevel(unit)
