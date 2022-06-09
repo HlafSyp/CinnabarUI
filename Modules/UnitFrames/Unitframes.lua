@@ -2,9 +2,24 @@ local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
 local MODULE_NAME = "UnitFrames"
 local oUF = select(2,...).oUF
+local cfg = Cfg.config.UnitFrames
 local uf = Module[MODULE_NAME]
 uf.Frames = {}
-local cfg = Cfg.config.UnitFrames
+
+
+local function CreateStatusBar(self)
+
+  local bar = CreateFrame('StatusBar', nil, self)
+  bar:SetStatusBarTexture(Cinnabar.lsm:Fetch('statusbar', 'Simple'))
+  bar:SetPoint('LEFT')
+  bar:SetPoint('RIGHT')
+  bar.bg = bar:CreateTexture(nil, 'BACKGROUND')
+  bar.bg:SetAllPoints(bar)
+  bar.bg:SetTexture(Cinnabar.lsm:Fetch('statusbar','Simple'))
+
+  return bar
+
+end
 
 -- Creates a Statusbar frame, sets the neccessary oUF config options and returns the frame
 -- This function will always be called first when it comes to creating Unitframes
@@ -18,18 +33,9 @@ local function CreateHealthBar(self, unit)
 
   local c = Cfg.config.UnitFrames[unit]
 
-  -- Position and size
-  local Health = CreateFrame('StatusBar', nil, self)
-  Health:SetHeight(c.HealthBar.Height)
+  local Health = CreateStatusBar(self)
   Health:SetPoint('TOP')
-  Health:SetPoint('LEFT')
-  Health:SetPoint('RIGHT')
-  Health:SetStatusBarTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
-
-  -- Add a background
-  local Background = Health:CreateTexture(nil, 'BACKGROUND')
-  Background:SetAllPoints(Health)
-  Background:SetTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
+  Health:SetHeight(c.HealthBar.Height)
 
   -- Options
   Health.colorTapping = c.HealthBar.colorTapping
@@ -40,10 +46,7 @@ local function CreateHealthBar(self, unit)
   Health.Smooth = true
 
   -- Make the background darker.
-  Background.multiplier = c.HealthBar.BgBrightness
-
-  -- Register it with oUF
-  Health.bg = Background
+  Health.bg.multiplier = c.HealthBar.BgBrightness
 
   -- If the bar is disabled, hide it, so a reload  isn't needed when it is enabled again
   if not c.HealthBar.Enabled then Health:Hide() end
@@ -64,19 +67,9 @@ local function CreatePowerBar(self, unit)
 
   local c = Cfg.config.UnitFrames[unit]
 
-
-  -- Position and size
-  local Power = CreateFrame('StatusBar', nil, self)
+  local Power = CreateStatusBar(self)
   Power:SetHeight(c.PowerBar.Height)
   Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -c.PowerBar.Padding)
-  Power:SetPoint("LEFT")
-  Power:SetPoint("RIGHT")
-  Power:SetStatusBarTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
-
-  -- Add a background
-  local Background = Power:CreateTexture(nil, 'BACKGROUND')
-  Background:SetAllPoints(Power)
-  Background:SetTexture(Cinnabar.lsm:Fetch("statusbar", "Simple"))
 
   -- Options
   Power.frequentUpdates = c.PowerBar.frequentUpdates
@@ -86,10 +79,9 @@ local function CreatePowerBar(self, unit)
   Power.colorClass = c.PowerBar.colorClass
   Power.colorReaction = c.PowerBar.colorReaction
   Power.Smooth = true
-  -- Make the background darker.
-  Background.multiplier = c.PowerBar.BgBrightness
 
-  Power.bg = Background
+  -- Make the background darker.
+  Power.bg.multiplier = c.PowerBar.BgBrightness
 
   -- If user doesn't want the bar, hide it so no reload is needed when they do
   if not c.PowerBar.Enabled then Power:Hide() end
@@ -100,7 +92,7 @@ local function CreatePowerBar(self, unit)
 end
 
 -- Creates a frame, and makes it a backdrop
--- Only serves as aesthetics, but is practically required to have a usable unitframea
+-- Only serves as aesthetics, but is practically required to have a usable unitframe
 ---------------------------------------
 -- @ARGUMENTS
 -- self (table) : Frame to attach backdrop to
@@ -109,11 +101,11 @@ end
 -- Backdrop (table) : A black box place behind the given frame
 local function CreateBackdrop(self, unit)
 
-  local c = Cfg.config.UnitFrames[unit]
+  local c = Cfg.config.UnitFrames[unit] or {}
 
   -- The following code is pretty much ripped from oUF_lumen
   -- It just looks so good, and is a nice base i would say
-  local Padding = c.BackdropInset
+  local Padding = c.BackdropInset or -2
   local Backdrop = CreateFrame("Frame", nil, self, "BackdropTemplate")
   Backdrop:SetAllPoints(self)
   Backdrop:SetFrameLevel(self:GetFrameLevel() == 0 and 0 or self:GetFrameLevel() - 1)
@@ -129,7 +121,7 @@ local function CreateBackdrop(self, unit)
       bottom = -Padding,
     }
   }
-  Backdrop:SetBackdropColor(0,0,0,c.BackdropOpacity)
+  Backdrop:SetBackdropColor(0,0,0,c.BackdropOpacity or 1)
 
   -- Hide the backdrop if it's not enabled
   -- Though, For the backdrop, I don't know why they would
@@ -220,44 +212,12 @@ local function PostCreate(unit, bar)
   local IsMirrored = c.Mirror
   local IsSmall = c.AuraBar.SmallBar
 
-  -- Set up the stuff for the backdrop
-  bar.backdrop = CreateFrame("Frame", nil, bar, "BackdropTemplate")
-  bar.backdrop:SetAllPoints(bar)
-  bar.backdrop:SetFrameLevel(bar:GetFrameLevel() == 0 and 0 or bar:GetFrameLevel() - 1)
-  local pad = c.BackdropInset
-
-  -- Set the backdrop for the main bar
-  bar.backdrop:SetBackdrop {
-    bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    tile = false,
-    tileSize = 0,
-    insets = {
-      left = -pad,
-      right = -pad,
-      top = -pad,
-      bottom = -pad,
-    }
-  }
-  -- Make the backdrop black to match the rest of the frame
-  bar.backdrop:SetBackdropColor(0,0,0,c.BackdropOpacity)
+  bar.backdrop = CreateBackdrop(bar, unit)
 
   -- Create a backdrop for the icon now,
   -- the backdrop is seperated into two so that small bar can be supported
-  bar.icon.backdrop = CreateFrame("Frame", nil, bar, "BackdropTemplate")
+  bar.icon.backdrop = CreateBackdrop(bar, unit)
   bar.icon.backdrop:SetAllPoints(bar.icon)
-  bar.icon.backdrop:SetFrameLevel(bar:GetFrameLevel() == 0 and 0 or bar:GetFrameLevel() - 1)
-  bar.icon.backdrop:SetBackdrop {
-    bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
-    tile = false,
-    tileSize = 0,
-    insets = {
-      left = -pad,
-      right = -pad,
-      top = -pad,
-      bottom = -pad,
-    }
-  }
-  bar.icon.backdrop:SetBackdropColor(0,0,0,c.BackdropOpacity)
 
   -- Reanchor the icon to be on the left edge and bottom edge instead of the left and top by default
   -- this is to allow small bar to function correctly
@@ -296,6 +256,8 @@ local function PostCreate(unit, bar)
 
 
   -- Setup the tooltip for hovering over auras
+  -- Create an overlay cover so that the user can hover anywhere
+  -- over the bar and still get the tooltip
   bar.cover = CreateFrame("Frame", nil, bar)
   bar.cover:SetPoint("TOPLEFT", bar.icon)
   bar.cover:SetPoint("BOTTOMRIGHT")
@@ -327,7 +289,7 @@ local function PostCreate(unit, bar)
   end)
 
 end
--- 194310 191587
+
 -- Exported to seperate function to keep the PostCreate(unit, bar) function short
 -- This is the mirrored section of the PostCreate function
 ---------------------------------------
