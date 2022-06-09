@@ -233,7 +233,13 @@ local function CreateReputationBar()
 
     GameTooltip:SetOwner(rep.bar, 'ANCHOR_CURSOR')
     GameTooltip:AddLine(rep.name)
-    GameTooltip:AddDoubleLine(rep:GetStanding(), Util:FormatNumber(rep.value or 0), Util:FormatNumber(rep.max or 0))
+    GameTooltip:AddDoubleLine(
+      rep:GetStanding(),
+      Util:FormatNumber(rep.value or 0) .. '/' .. Util:FormatNumber(rep.max or 0),
+      nil, nil, nil,
+      1,1,1
+    )
+    GameTooltip:Show()
 
   end
 
@@ -311,6 +317,7 @@ local function CreateReputationBar()
     rep.name = name;
     rep.value = value;
     rep.max = maxBar;
+    rep.standing = select(3, GetFactionInfoByID(factionID))
 
   end
 
