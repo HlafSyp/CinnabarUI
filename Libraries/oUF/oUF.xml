@@ -3,11 +3,12 @@
 	<Script file="Libraries/oUF/private.lua"/>
 	<Script file="Libraries/oUF/ouf.lua"/>
 	<Script file="Libraries/oUF/events.lua"/>
+	<Script file="Libraries/oUF/combatevents.lua"/>
 	<Script file="Libraries/oUF/factory.lua"/>
 	<Script file="Libraries/oUF/blizzard.lua"/>
 	<Script file="Libraries/oUF/units.lua"/>
 	<Script file="Libraries/oUF/colors.lua"/>
-Libraries/oUF/
+
 	<Script file="Libraries/oUF/elements\additionalpower.lua"/>
 	<Script file="Libraries/oUF/elements\alternativepower.lua"/>
 	<Script file="Libraries/oUF/elements\assistantindicator.lua"/>
