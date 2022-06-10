@@ -24,6 +24,7 @@ Modules/Tooltip/Tooltip.lua
 Modules/UnitFrames/Tags.lua
 Modules/UnitFrames/Unitframes.lua
 Modules/UnitFrames/Options.lua
+Modules/UnitFrames/Nameplates.lua
 
 Modules/Databars/Databars.lua
 
