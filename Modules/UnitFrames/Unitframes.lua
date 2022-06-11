@@ -654,6 +654,8 @@ function uf:RegisterUnit(self, unit)
   end)
   self.Highlight:Hide()
 
+  self:RegisterForClicks('AnyUp')
+
   -- Hide the unitframe if user doesn't want frame to be created
   if not Cfg.config.UnitFrames.Units[unit] then self:Hide() end
 
