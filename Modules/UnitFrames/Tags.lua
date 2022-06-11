@@ -18,6 +18,8 @@ oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit)
         assert(type(precision) == "number", "Type given to oUF Tag function, ['Cinnabar:curhp'] parameter, precision invalid (expected number, got " .. type(precision) .. ")")
         if health < 10000 then
             return health
+        elseif health > 1000000 then
+            health = Util:ShortenNumber(2,1,health)
         else
             health = Util:ShortenNumber(3,1,health)
         end
@@ -74,6 +76,27 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
         return string.format("%s %s", level, name)
     end
 end
+
+oUF.Tags.Methods['Cinnabar:smartlevel'] = function(unit, realUnit)
+
+    local level = UnitLevel(unit)
+    local e_Level = UnitEffectiveLevel(unit)
+    local color = GetCreatureDifficultyColor(e_Level)
+    if level == -1 then level = '??' end
+    color = ConvertRGBtoColorString(color)
+    level = color .. level
+
+    -- If both the player and the unit is max level
+    -- don't display the level
+    if UnitLevel('player') == Cinnabar.data.MAX_LEVEL and level == Cinnabar.data.MAX_LEVEL then
+        level = ''
+    end
+
+    return level
+
+end
+
+oUF.Tags.Events['Cinnabar:smartlevel'] = 'UNIT_LEVEL PLAYER_LEVEL_UP'
 
 -- oUF tag event register
 oUF.Tags.Events['Cinnabar:curhp'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
