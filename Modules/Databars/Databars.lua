@@ -90,6 +90,9 @@ local function CreateHonorBar()
 
   -- Register Tooltip Function
   function honor.ShowTooltip()
+
+    if not honor.bar:IsVisible() then return end
+
     local xpCur, xpMax, level = UnitHonor('player'), UnitHonorMax('player'), UnitHonorLevel('player')
     local nL = C_PvP.GetNextHonorLevelForReward(level)
     GameTooltip:SetOwner(honor.bar, 'ANCHOR_CURSOR')
@@ -170,6 +173,7 @@ local function CreateXPBar()
 
   -- Register Tooltip Function
   function xp:ShowTooltip()
+    if not xp.bar:IsVisible() then return end
     local xpCur, xpMax, level = UnitXP('player'), UnitXPMax('player'), UnitLevel('player')
     local rested = GetXPExhaustion()
     GameTooltip:SetOwner(xp.bar, 'ANCHOR_CURSOR')
@@ -231,6 +235,7 @@ local function CreateReputationBar()
 
   function rep.ShowTooltip()
 
+    if rep.bar:GetAlpha() ~= 1 then return end
     GameTooltip:SetOwner(rep.bar, 'ANCHOR_CURSOR')
     GameTooltip:AddLine(rep.name)
     GameTooltip:AddDoubleLine(
