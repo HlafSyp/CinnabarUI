@@ -14,6 +14,7 @@ m["UnitFrames"] = Cinnabar:NewModule("UnitFrames")
 m["Tooltip"]    = Cinnabar:NewModule("Tooltip")
 m["Databar"]    = Cinnabar:NewModule("Databar")
 m['Skin']       = Cinnabar:NewModule("Skin")
+m['Nameplates'] = Cinnabar:NewModule('Nameplates')
 
 -------------
 --  Extra  --
