@@ -7,14 +7,20 @@ local oUF = select(2,...).oUF
 
 if false then return end
 
-local _, PlayerClass = UnitClass('player')
-local PowerType, PowerName
 local width, height = 85, 10
-local TargetInfo
 local default_texture = Cinnabar.lsm:Fetch('statusbar', 'Simple')
 local default_font = Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular')
 
 local function NameplateCallback(self, event, unit)
+
+  if event == 'NAME_PLATE_UNIT_ADDED' then
+    if UnitIsFriend('player', unit) then
+      self:ChangeToNameOnly()
+    end
+
+  elseif event == 'NAME_PLATE_UNIT_REMOVED' then
+    self:Reset()
+  end
 
 end
 
@@ -29,22 +35,7 @@ local function SetCastbarsColor(castbar, unit)
 
 end
 
-local function CreateNameplate(self,  unit)
-
-  self:SetSize(width, height)
-  self:SetPoint('CENTER')
-
-  -- Create the Healthbar portion of the nameplate
-  local Health = CreateFrame('StatusBar', nil, self)
-  Health:SetStatusBarTexture(default_texture)
-  Health:SetAllPoints(self)
-  Health.bg = Health:CreateTexture(nil, 'BACKGROUND')
-  Health.bg:SetAllPoints(Health)
-  Health.bg:SetTexture(default_texture)
-  Health.bg.multiplier = 0.3
-  Health.Smooth = true
-  Health.colorClass = true
-  Health.colorReaction = true
+local function CreateCastBar(self, unit)
 
   local Castbar = CreateFrame('StatusBar', nil, self)
   Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0,  -3)
@@ -111,20 +102,59 @@ local function CreateNameplate(self,  unit)
   }
   Castbar.Backdrop:SetBackdropColor(0,0,0, 1)
 
+  return Castbar
 
-  local name = Health:CreateFontString(nil, 'ARTWORK')
+end
+
+local function CreateHealthBar(self, unit)
+
+  local Health = CreateFrame('StatusBar', nil, self)
+  Health:SetStatusBarTexture(default_texture)
+  Health:SetAllPoints(self)
+  Health.bg = Health:CreateTexture(nil, 'BACKGROUND')
+  Health.bg:SetAllPoints(Health)
+  Health.bg:SetTexture(default_texture)
+  Health.bg.multiplier = 0.3
+  Health.Smooth = true
+  Health.colorClass = true
+  Health.colorReaction = true
+
+  return Health
+
+end
+
+local function CreateNameplate(self,  unit)
+
+  self:SetSize(width, height)
+  self:SetPoint('CENTER')
+
+  -- Create the Healthbar portion of the nameplate
+  self.Health  = CreateHealthBar(self, unit)
+  self.Castbar = CreateCastBar  (self, unit)
+
+  local SecondaryName = self:CreateFontString(nil, 'ARTWORK')
+  SecondaryName:SetFont(default_font, 12, 'OUTLINE')
+  SecondaryName:SetPoint('CENTER')
+  self:Tag(SecondaryName, '[Cinnabar:NameNameplate]')
+  SecondaryName:Hide()
+  local SecondaryNameTitle = self:CreateFontString(nil, 'ARTWORK')
+  SecondaryNameTitle:SetFont(default_font, 10, 'OUTLINE')
+  SecondaryNameTitle:SetPoint('TOP', SecondaryName, 'BOTTOM', 0, -2)
+
+
+  local name = self.Health:CreateFontString(nil, 'ARTWORK')
   name:SetFont(default_font, 10, 'OUTLINE')
   name:SetPoint('BOTTOM', self, 'TOP', 0, 0)
   self:Tag(name, '[name]')
 
-  local level = Health:CreateFontString(nil, 'ARTWORK')
+  local level = self.Health:CreateFontString(nil, 'ARTWORK')
   level:SetFont(default_font, 12, 'OUTLINE')
-  level:SetPoint('LEFT', Health, 'LEFT', 0, -1)
+  level:SetPoint('LEFT', self.Health, 'LEFT', 0, -1)
   self:Tag(level, '[Cinnabar:smartlevel]')
 
-  local perhp = Health:CreateFontString(nil, 'ARTWORK')
+  local perhp = self.Health:CreateFontString(nil, 'ARTWORK')
   perhp:SetFont(default_font, 12, 'OUTLINE')
-  perhp:SetPoint('RIGHT', Health, 'RIGHT', 0, -1)
+  perhp:SetPoint('RIGHT', self.Health, 'RIGHT', 0, -1)
   self:Tag(perhp, '[perhp]')
 
 
@@ -142,8 +172,6 @@ local function CreateNameplate(self,  unit)
   end)
 
   -- Register it with oUF
-  self.Health     = Health
-  self.Castbar    = Castbar
   self.Backdrop   = CreateFrame("Frame", nil, self, "BackdropTemplate")
   self.Backdrop:SetAllPoints(self)
   self.Backdrop:SetFrameLevel(self:GetFrameLevel() == 0 and 0 or self:GetFrameLevel() - 1)
@@ -161,21 +189,46 @@ local function CreateNameplate(self,  unit)
   }
   self.Backdrop:SetBackdropColor(0,0,0, 1)
 
+  function self:ChangeToNameOnly()
+
+    self.Backdrop:Hide()
+    self.Health:Hide()
+    self:DisableElement('Castbar')
+    self:SetScript('OnEnter', nil)
+    SecondaryName:Show()
+
+  end
+
+  function self:Reset()
+
+    self.Backdrop:Show()
+    self.Health:Show()
+    self:EnableElement('Castbar')
+    self:SetScript('OnEnter', function() self.Highlight:Show() end)
+    SecondaryName:Hide()
+    SecondaryNameTitle:Show()
+
+  end
+
 end
 
-oUF:RegisterStyle("CinnabarNameplate", CreateNameplate)
+function Nameplate:OnInitialize()
 
-oUF:Factory(function(self)
+  oUF:RegisterStyle("CinnabarNameplate", CreateNameplate)
 
-  local cvars = {
-    ['nameplateShowAll']        = 1,      -- Shows all Nameplates
-    ['nameplateGlobalScale']    = 1,      -- Controls Size of Nameplates
-    ['nameplateSelectedScale']  = 1.2,    -- Controls Size of Target's Nameplate
-    ['nameplateMotion']         = 1,      -- Whether to stack or overlap nameplates
-    ["nameplateMotionSpeed"]    = 0.01,   -- How fast it moves
-  }
+  oUF:Factory(function(self)
 
-  self:SetActiveStyle("CinnabarNameplate")
-  self:SpawnNamePlates("CinnabarUI_", NameplateCallback, cvars)
+    local cvars = {
+      ['nameplateShowAll']        = 1,      -- Shows all Nameplates
+      ['nameplateGlobalScale']    = 1,      -- Controls Size of Nameplates
+      ['nameplateSelectedScale']  = 1.2,    -- Controls Size of Target's Nameplate
+      ['nameplateMotion']         = 1,      -- Whether to stack or overlap nameplates
+      ["nameplateMotionSpeed"]    = 0.01,   -- How fast it moves
+    }
 
-end)
+    self:SetActiveStyle("CinnabarNameplate")
+    self:SpawnNamePlates("CinnabarUI_", NameplateCallback, cvars)
+
+  end)
+
+end

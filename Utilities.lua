@@ -67,6 +67,18 @@ function Util:FormatNumber(number)
   return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
+function Util:SplitStringByPercent(str, perc)
+
+  if perc > 1 then perc = perc / 100 end
+  local length = string.len(str)
+  local End = Round(length * perc)
+  local front = string.sub(str, 1, End)
+  local back = string.sub(str, End + 1, -1)
+
+  return front, back
+
+end
+
 -- Shortens a number to the desired form and with the desired precision
 -- This is extremely overly complicated but whatever, I like how it looks
 -- 1 - No abbreviations but cut to correct precision

@@ -77,6 +77,46 @@ oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
     end
 end
 
+oUF.Tags.Methods['Cinnabar:NameNameplate'] = function(unit, realUnit)
+    local  Colors = {
+        'b3331a',   -- Exceptionally Hostile
+        'b3331a',   -- Very Hostile
+        'b3331a',   -- Hostile
+        'ffcc00',   -- Neutral
+        'add6a3',   -- Friendly
+        'add6a3',   -- Very Friendly
+        'add6a3',   -- Exceptionally Friendly
+        'add6a3',   -- Exalted
+    }
+    local  ColorsDark = {
+        '360f08',   -- Exceptionally Hostile
+        '360f08',   -- Very Hostile
+        '360f08',   -- Hostile
+        '4c3d00',   -- Neutral
+        '344031',   -- Friendly
+        '344031',   -- Very Friendly
+        '344031',   -- Exceptionally Friendly
+        '344031',   -- Exalted
+    }
+    local Health = UnitHealth(unit)
+    local MaxHealth = UnitHealthMax(unit)
+    local r,g,b, ClassColor = GetClassColor(select(2,UnitClass(unit)))
+    local Reaction = UnitReaction('player', unit)
+    local name =  UnitName(unit)
+    local front, back = Util:SplitStringByPercent(name, Health / MaxHealth)
+    if UnitIsPlayer(unit) then
+        return string.format('|c%s%s|r%s%s|r', ClassColor, front, ConvertRGBtoColorString({r = r * 0.3,g = g * 0.3,b = b * 0.3}), back)
+    else
+        return string.format('|cff%s%s|r|cff%s%s|r', Colors[Reaction], front, ColorsDark[Reaction], back)
+    end
+
+end
+
+oUF.Tags.Methods['Cinnabar:Title'] = function(unit, realUnit)
+
+
+end
+
 oUF.Tags.Methods['Cinnabar:smartlevel'] = function(unit, realUnit)
 
     local level = UnitLevel(unit)
@@ -96,6 +136,7 @@ oUF.Tags.Methods['Cinnabar:smartlevel'] = function(unit, realUnit)
 
 end
 
+oUF.Tags.Events['Cinnabar:NameNameplate'] = 'UNIT_NAME_UPDATE UNIT_HEALTH UNIT_MAXHEALTH'
 oUF.Tags.Events['Cinnabar:smartlevel'] = 'UNIT_LEVEL PLAYER_LEVEL_UP'
 
 -- oUF tag event register
