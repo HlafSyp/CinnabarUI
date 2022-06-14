@@ -25,9 +25,9 @@ Modules/UnitFrames/Tags.lua
 Modules/UnitFrames/Unitframes.lua
 Modules/UnitFrames/Options.lua
 
+Modules/Nameplates/Nameplates.lua
 Modules/Nameplates/ClassPower.lua
 Modules/Nameplates/Runes.lua
-Modules/Nameplates/Nameplates.lua
 
 Modules/Databars/Databars.lua
 
