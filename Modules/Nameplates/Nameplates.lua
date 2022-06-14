@@ -10,9 +10,11 @@ if false then return end
 local width, height = 85, 10
 local default_texture = Cinnabar.lsm:Fetch('statusbar', 'Simple')
 local default_font = Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular')
-
+local TargetInfo
+-- Create the target info panel
+-- This is in charge of holding things like runes and class powers
 do
-  local TargetInfo = CreateFrame('Frame', nil, UIParent)
+  TargetInfo = CreateFrame('Frame', nil, UIParent)
   TargetInfo:SetSize(width, height)
   function TargetInfo:Pin(frame)
 
@@ -136,6 +138,25 @@ local function CreateCastBar(self, unit)
   }
   Castbar.Backdrop:SetBackdropColor(0,0,0, 1)
 
+  function Castbar:PostCastStart(unit)
+
+    if TargetInfo.Runes then
+      TargetInfo.Runes:ChangeVOffset(Castbar:GetHeight() + 3)
+    elseif TargetInfo.ClassPower then
+    end
+
+  end
+
+  function Castbar:PostCastStop(unit)
+
+    if TargetInfo.Runes then
+      TargetInfo.Runes:ChangeVOffset(0)
+    elseif TargetInfo.ClassPower then
+    end
+
+  end
+
+
   return Castbar
 
 end
@@ -143,8 +164,8 @@ end
 local function CreateAuras(self, unit)
 
   local Debuffs = CreateFrame('Frame', nil, self)
-  Debuffs:SetPoint('BOTTOMLEFT', self, 'TOPLEFT', 0, 10)
-  Debuffs:SetPoint('BOTTOMRIGHT', self, 'TOPRIGHT', 0, 10)
+  Debuffs:SetPoint('BOTTOMLEFT', self, 'TOPLEFT', 0, 12)
+  Debuffs:SetPoint('BOTTOMRIGHT', self, 'TOPRIGHT', 0, 12)
   Debuffs:SetHeight(16 * 16)
   Debuffs.size = 14
   Debuffs.onlyShowPlayer = true

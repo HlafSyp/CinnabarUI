@@ -41,6 +41,7 @@ do
     bar:SetValue(1)
     bar:SetStatusBarTexture(default_texture)
     bar.bg = bar:CreateTexture(nil, 'BACKGROUND')
+    bar.bg:SetAllPoints(bar)
     bar.bg:SetTexture(default_texture)
     bar.Backdrop = CreateFrame("Frame", nil, bar, "BackdropTemplate")
     bar.Backdrop:SetAllPoints(bar)
@@ -58,10 +59,25 @@ do
       }
     }
     bar.Backdrop:SetBackdropColor(0,0,0, 1)
+
+    -- Helper function to make moving the runes easier
+    function bar:ChangeVOffset(offset)
+      bar:ClearAllPoints()
+      bar:SetPoint(
+        'TOP',
+        TargetInfo,
+        'BOTTOM',
+        ((i - 1) * (Width + 3)) - (w / 2) + (Width / 2) + Width / 6, -- [TODO] (HlafSyp) Simplify this mess of an equation
+        -3 - offset
+      )
+
+    end
+
     Runes[i] = bar
   end
 end
 
+-- Works just like Array.Map in js
 function Runes:Map(func)
 
   assert(type(func) == 'function', 'Usage: Runes:Map(func) expected type \'function\' for argument #1, got ' .. type(func))
@@ -71,6 +87,18 @@ function Runes:Map(func)
 
 end
 
+-- Changes the vertical offset of all the runes
+function Runes:ChangeVOffset(offset)
+
+  Runes:Map(function(rune)
+
+    rune:ChangeVOffset(offset)
+
+  end)
+
+end
+
+-- Updates the color to match the spec of the dk
 function Runes:UpdateColor()
 
   local Spec = GetSpecialization()
@@ -78,12 +106,14 @@ function Runes:UpdateColor()
   Runes:Map(function(rune)
 
     rune:SetStatusBarColor(r,g,b, 1)
-    rune.bg:SetVertexColor(r * 0.7,g * 0.7,b * 0.7, 1)
+    rune.bg:SetVertexColor(r * 0.3,g * 0.3,b * 0.3, 1)
 
   end)
 
 end
 
+-- In charge of handling updating the runes
+-- Copied from oUF
 function Runes:Update()
 
   local rune, start, dur, runeReady
@@ -114,6 +144,7 @@ function Runes:Update()
 
 end
 
+-- Setup the rune stuff
 Runes:UpdateColor()
 TargetInfo:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED')
 TargetInfo:RegisterEvent('RUNE_POWER_UPDATE')
