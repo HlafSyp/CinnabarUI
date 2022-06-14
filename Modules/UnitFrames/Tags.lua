@@ -105,7 +105,7 @@ oUF.Tags.Methods['Cinnabar:NameNameplate'] = function(unit, realUnit)
     local name =  UnitName(unit)
     local front, back = Util:SplitStringByPercent(name, Health / MaxHealth)
     if UnitIsPlayer(unit) then
-        return string.format('|c%s%s|r%s%s|r', ClassColor, front, ConvertRGBtoColorString({r = r * 0.3,g = g * 0.3,b = b * 0.3}), back)
+        return string.format('|c%s%s|r%s%s|r', ClassColor, front, ConvertRGBtoColorString({r = r * 0.3,g = g * 0.3,b = b * 0.3 }), back)
     else
         return string.format('|cff%s%s|r|cff%s%s|r', Colors[Reaction], front, ColorsDark[Reaction], back)
     end
