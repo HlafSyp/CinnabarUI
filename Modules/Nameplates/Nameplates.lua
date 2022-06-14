@@ -140,6 +140,42 @@ local function CreateCastBar(self, unit)
 
 end
 
+local function CreateAuras(self, unit)
+
+  local Debuffs = CreateFrame('Frame', nil, self)
+  Debuffs:SetPoint('BOTTOMLEFT', self, 'TOPLEFT', 0, 10)
+  Debuffs:SetPoint('BOTTOMRIGHT', self, 'TOPRIGHT', 0, 10)
+  Debuffs:SetHeight(16 * 16)
+  Debuffs.size = 14
+  Debuffs.onlyShowPlayer = true
+  Debuffs.disableMouse = false
+  Debuffs.spacing = 2
+
+  function Debuffs:PostCreateIcon(button)
+
+    button.Backdrop = CreateFrame("Frame", nil, button, "BackdropTemplate")
+    button.Backdrop:SetAllPoints(button)
+    button.Backdrop:SetFrameLevel(button:GetFrameLevel() == 0 and 0 or button:GetFrameLevel() - 1)
+
+    button.Backdrop:SetBackdrop {
+      bgFile = "Interface\\ChatFrame\\ChatFrameBackground",
+      tile = false,
+      tileSize = 0,
+      insets = {
+        left = -1,
+        right = -1,
+        top = -1,
+        bottom = -1,
+      }
+    }
+    button.Backdrop:SetBackdropColor(0,0,0, 1)
+
+  end
+
+  return Debuffs
+
+end
+
 local function CreateHealthBar(self, unit)
 
   local Health = CreateFrame('StatusBar', nil, self)
@@ -165,6 +201,7 @@ local function CreateNameplate(self,  unit)
   -- Create the Healthbar portion of the nameplate
   self.Health  = CreateHealthBar(self, unit)
   self.Castbar = CreateCastBar  (self, unit)
+  self.Debuffs = CreateAuras    (self, unit)
 
   local SecondaryName = self:CreateFontString(nil, 'ARTWORK')
   SecondaryName:SetFont(default_font, 12, 'OUTLINE')
