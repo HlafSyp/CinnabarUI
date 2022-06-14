@@ -102,7 +102,7 @@ end
 function Runes:UpdateColor()
 
   local Spec = GetSpecialization()
-  local r,g,b = unpack(Colors[Spec] or colors.power.RUNES)
+  local r,g,b = unpack(Colors[Spec] or {0.5, 0.5, 0.5})
   Runes:Map(function(rune)
 
     rune:SetStatusBarColor(r,g,b, 1)
@@ -116,6 +116,7 @@ end
 -- Copied from oUF
 function Runes:Update()
 
+  Runes:UpdateColor()
   local rune, start, dur, runeReady
   for i = 1, 6 do
     rune = Runes[i]

@@ -1,5 +1,7 @@
 local Cinnabar, Util, Cfg, Module = unpack(select(2,...))
 
+-- This whole file is pretty much copied from oUF
+
 -- If the player isn't on a class that needs class power
 -- Don't Run this file
 local _, PlayerClass = UnitClass('player')
@@ -124,7 +126,7 @@ function ClassPower:ResizeBars()
 
   local Width = w / count - 3
   ClassPower:Map(function(bar, index)
-    bar:SetSize((w / 6) - 3, height)
+    bar:SetSize((w / count) - 3, height)
     bar:SetPoint(
       'TOP',
       TargetInfo,
@@ -141,48 +143,65 @@ local function Route(self, event, ...)
   if      event == 'SPELLS_CHANGED'           or
           event == 'UNIT_DISPLAYPOWER'        or
           event == 'PLAYER_TALENT_UPDATE'     then
-    ClassPower:Visibility(...)
+    ClassPower:Visibility(event)
   elseif  event == 'UNIT_POWER_FREQUENT'      or
           event == 'UNIT_MAXPOWER'            or
           event == 'UNIT_POWER_POINT_CHARGE'  then
-    ClassPower:Update(...)
+    ClassPower:Update(event, ...)
   end
 end
 
 function ClassPower:Update(event, unit, powerType)
+  if(not (unit and (UnitIsUnit(unit, 'player') and (not powerType or powerType == ClassPowerType)
+		or unit == 'vehicle' and powerType == 'COMBO_POINTS'))) then
+		return
+	end
 
 	local element = ClassPower
 
 	local cur, max, mod, oldMax, chargedPoints
 	if(event ~= 'ClassPowerDisable') then
 		local powerID = unit == 'vehicle' and SPELL_POWER_COMBO_POINTS or ClassPowerID
-		cur = UnitPower(unit, powerID, true)
-		max = UnitPowerMax(unit, powerID)
-		mod = UnitPowerDisplayMod(powerID)
+    cur = UnitPower(unit, powerID, true)
+    max = UnitPowerMax(unit, powerID)
+    mod = UnitPowerDisplayMod(powerID)
 
-		-- mod should never be 0, but according to Blizz code it can actually happen
-		cur = mod == 0 and 0 or cur / mod
+    -- mod should never be 0, but according to Blizz code it can actually happen
+    cur = mod == 0 and 0 or cur / mod
 
-		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
-		if(ClassPowerType == 'SOUL_SHARDS' and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then
-			cur = cur - cur % 1
-		end
+    -- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
+    if(ClassPowerID == SPELL_POWER_SOUL_SHARDS and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then
+      cur = cur - cur % 1
+    end
 
-		if(PlayerClass == 'ROGUE') then
-			chargedPoints = GetUnitChargedPowerPoints(unit)
+    if(PlayerClass == 'ROGUE') then
+      chargedPoints = GetUnitChargedPowerPoints(unit)
 
-			-- UNIT_POWER_POINT_CHARGE doesn't provide a power type
-			powerType = powerType or ClassPowerType
-		end
+      -- UNIT_POWER_POINT_CHARGE doesn't provide a power type
+      powerType = powerType or 'COMBO_POINTS'
+    end
 
-		local numActive = cur + 0.9
-		for i = 1, max do
-			if(i > numActive) then
-				element[i]:SetValue(0)
-			else
-        element[i]:Show()
-				element[i]:SetValue(cur - i + 1)
+    local numActive = cur + 0.9
+    for i = 1, max do
+      element[i]:Show()
+      if(i > numActive) then
+        element[i]:SetValue(0)
+      else
+        element[i]:SetValue(cur - i + 1)
+      end
+    end
+
+    oldMax = element.__max
+		if(max ~= oldMax) then
+			if(max < oldMax) then
+				for i = max + 1, oldMax do
+					element[i]:Hide()
+					element[i]:SetValue(0)
+          ClassPower:ResizeBars()
+				end
 			end
+
+			element.__max = max
 		end
 
 	end
@@ -200,6 +219,8 @@ function ClassPower:Visibility(event)
     if not RequireSpec or RequireSpec == GetSpecialization() then
       if not RequirePower or RequirePower == UnitPowerType('player') then
         if not RequireSpell or IsPlayerSpell(RequireSpell) then
+          ClassPower:Map(function(bar) bar:Show() end)
+          ClassPower:HandleAscension()
           TargetInfo:UnregisterEvent('SPELLS_CHANGED', ClassPower.Visibility)
           toEnable = true
           unit = 'player'
@@ -212,6 +233,7 @@ function ClassPower:Visibility(event)
     local powerType = unit == 'vehicle' and 'COMBO_POINTS' or ClassPowerType
 
     if toEnable and not isEnabled then
+
       TargetInfo:RegisterEvent('UNIT_POWER_FREQUENT', ClassPower.Update)
       TargetInfo:RegisterEvent('UNIT_MAXPOWER', ClassPower.Update)
 
@@ -242,6 +264,21 @@ function ClassPower:Visibility(event)
       ClassPower:Update(event, unit, powerType)
     end
   end
+end
+
+function ClassPower:HandleAscension()
+
+  if PlayerClass ~= 'MONK' then return end
+  ClassPower:Map(function(bar)
+    bar:Show()
+  end)
+  if IsPlayerSpell(115396) then -- CHecks if monk has Ascension talent
+    ClassPower[6]:Show()
+  else
+    ClassPower[6]:Hide()
+  end
+  ClassPower:ResizeBars()
+
 end
 
 function ClassPower:Color()
@@ -290,16 +327,17 @@ do
 
   ClassPower:Color()
   local element = ClassPower
-	if(element) then
+	if element  then
 		element.__owner = TargetInfo
 		element.__max = #element
-		if(RequireSpec or RequireSpell) then
+		if RequireSpec or RequireSpell then
 			TargetInfo:RegisterEvent('PLAYER_TALENT_UPDATE', ClassPower.Visibility, true)
 		end
 
-		if(RequirePower) then
+		if RequirePower then
 			TargetInfo:RegisterEvent('UNIT_DISPLAYPOWER', ClassPower.Visibility)
 		end
   end
   TargetInfo:HookScript('OnEvent', Route)
+  ClassPower:Visibility('ForceUpdate', 'player')
 end
