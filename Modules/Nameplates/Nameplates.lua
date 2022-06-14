@@ -11,15 +11,49 @@ local width, height = 85, 10
 local default_texture = Cinnabar.lsm:Fetch('statusbar', 'Simple')
 local default_font = Cinnabar.lsm:Fetch('font', 'BebasNeue-Regular')
 
+do
+  local TargetInfo = CreateFrame('Frame', nil, UIParent)
+  TargetInfo:SetSize(width, height)
+  function TargetInfo:Pin(frame)
+
+    self:UnPin()
+    self:SetParent(frame)
+    self:ClearAllPoints()
+    self:Show()
+    self:SetPoint("CENTER", frame)
+
+  end
+  function TargetInfo:UnPin()
+
+    self:SetParent(UIParent)
+    self:Hide()
+    self:ClearAllPoints()
+
+  end
+
+  Nameplate.TargetInfo = TargetInfo
+
+end
+
+
 local function NameplateCallback(self, event, unit)
 
   if event == 'NAME_PLATE_UNIT_ADDED' then
     if UnitIsFriend('player', unit) then
       self:ChangeToNameOnly()
     end
+    if UnitIsUnit(unit, 'target') then
+      Nameplate.TargetInfo:Pin(self)
+    end
 
   elseif event == 'NAME_PLATE_UNIT_REMOVED' then
     self:Reset()
+  elseif event == 'PLAYER_TARGET_CHANGED' then
+    if UnitIsUnit(unit, 'target') and self then
+      Nameplate.TargetInfo:Pin(self)
+    else
+      Nameplate.TargetInfo:UnPin()
+    end
   end
 
 end
