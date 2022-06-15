@@ -44,15 +44,22 @@ local function AppendMountToTooltip(mountID)
     -- not counting the characters giving the gold icon
     if string.len(source) < 5 then break end
 
-    -- Break the string into two, assume the wanted entry is at the start of the line
-    local left = string.sub(source, string.find(source, '|c.-|r'))
-    local right = string.sub(source, string.find(source, '|r.-|n'))
+    -- Because the rated pvp mounts don't color the last line of the source string
+    -- Check to make sure the regex exp is able to find something
+    -- So the string.sub call doesn't throw an error
+    -- I realize why Elv's regex exp is so complicated now, it probably handles this situation
+    if string.find(source, '|c.-|r') then
+      -- Break the string into two, assume the wanted entry is at the start of the line
+      local left = string.sub(source, string.find(source, '|c.-|r'))
+      local right = string.sub(source, string.find(source, '|r.-|n'))
+      -- Add the broken text into the tooltip
+      GameTooltip:AddDoubleLine(left, right, nil, nil, nil, 1, 1, 1)
 
-    -- Add the broken text into the tooltip
-    GameTooltip:AddDoubleLine(left, right, nil, nil, nil, 1, 1, 1)
-
-    -- Remove the newly added line from the source string
-    source = string.sub(source, string.len(left .. right) - 1, string.len(source))
+      -- Remove the newly added line from the source string
+      source = string.sub(source, string.len(left .. right) - 1, string.len(source))
+    else
+      GameTooltip:AddDoubleLine(source, '')
+    end
 
   end
 
