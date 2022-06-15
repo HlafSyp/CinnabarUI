@@ -33,6 +33,12 @@ Modules/Databars/Databars.lua
 
 Modules/Skin/Skinner.lua
 
+Modules/Maps/Maps.lua
+
+Modules/ActionBars/RemoveBlizzard.lua
+Modules/ActionBars/ActionButton.lua
+Modules/ActionBars/ActionBars.lua
+
 # Core Files
 Core.lua
 
