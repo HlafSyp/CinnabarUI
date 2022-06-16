@@ -41,8 +41,8 @@ local function CreateStatusBar(enableBackdrop, parent, name)
     tile = false,
     tileSize = 0,
     insets = {
-      left = -2,
-      right = -2,
+      left = -3,
+      right = -3,
       top = -2,
       bottom = -2,
     }
