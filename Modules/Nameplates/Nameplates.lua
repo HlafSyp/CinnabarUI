@@ -105,7 +105,7 @@ local function CreateCastBar(self, unit)
   -- Add Shield
   Castbar.Shield = Castbar:CreateTexture(nil, 'OVERLAY')
   Castbar.Shield:SetSize(height, height)
-  Castbar.Shield:SetPoint('LEFT', Castbar)
+  Castbar.Shield:SetPoint('CENTER', Castbar, 'LEFT')
 
   -- Add a timer
   Castbar.Time = Castbar:CreateFontString(nil, 'OVERLAY')
@@ -143,6 +143,13 @@ local function CreateCastBar(self, unit)
     if TargetInfo.Runes then
       TargetInfo.Runes:ChangeVOffset(Castbar:GetHeight() + 3)
     elseif TargetInfo.ClassPower then
+      TargetInfo.ClassPower:ChangeVOffset(Castbar:GetHeight() + 3)
+    end
+
+    if self.AlternativePower then
+      self.AlternativePower:ClearAllPoints()
+      AlternativePower:SetPoint('TOPLEFT', self.Castbar, 'BOTTOMLEFT', 0,  -3)
+      AlternativePower:SetPoint('TOPRIGHT', self.Castbar, 'BOTTOMRIGHT', 0, -3)
     end
 
   end
@@ -152,6 +159,13 @@ local function CreateCastBar(self, unit)
     if TargetInfo.Runes then
       TargetInfo.Runes:ChangeVOffset(0)
     elseif TargetInfo.ClassPower then
+      TargetInfo.ClassPower:ChangeVOffset(0)
+    end
+
+    if self.AlternativePower then
+      self.AlternativePower:ClearAllPoints()
+      AlternativePower:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0,  -3)
+      AlternativePower:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -3)
     end
 
   end
@@ -219,10 +233,22 @@ local function CreateNameplate(self,  unit)
   self:SetSize(width, height)
   self:SetPoint('CENTER')
 
-  -- Create the Healthbar portion of the nameplate
   self.Health  = CreateHealthBar(self, unit)
   self.Castbar = CreateCastBar  (self, unit)
   self.Debuffs = CreateAuras    (self, unit)
+
+  local RaidTargetIndicator = self:CreateTexture(nil, 'OVERLAY')
+  RaidTargetIndicator:SetSize(23, 23)
+  RaidTargetIndicator:SetPoint('BOTTOM', self, 'TOP', 0, 20)
+
+  self.RaidTargetIndicator = RaidTargetIndicator
+
+  local AlternativePower = CreateFrame('StatusBar', nil, self)
+  AlternativePower:SetHeight(20)
+  AlternativePower:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0,  -3)
+  AlternativePower:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -3)
+
+  self.AlternativePower = AlternativePower
 
   local SecondaryName = self:CreateFontString(nil, 'ARTWORK')
   SecondaryName:SetFont(default_font, 12, 'OUTLINE')

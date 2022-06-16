@@ -114,6 +114,16 @@ function ClassPower:Map(func)
 
 end
 
+function ClassPower:ChangeVOffset(offset)
+
+  ClassPower:Map(function(bar)
+
+    bar:ChangeVOffset(offset)
+
+  end)
+
+end
+
 function ClassPower:ResizeBars()
 
   local w = TargetInfo:GetWidth()
@@ -340,4 +350,5 @@ do
   end
   TargetInfo:HookScript('OnEvent', Route)
   ClassPower:Visibility('ForceUpdate', 'player')
+  TargetInfo.ClassPower = ClassPower -- Register it with the Info Panel
 end
