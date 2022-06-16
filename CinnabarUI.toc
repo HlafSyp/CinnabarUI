@@ -11,6 +11,7 @@ Libraries/Load_Libraries.xml
 # Initialization Files
 Initialize.lua
 Utilities.lua
+Modules/ActionBars/RemoveBlizzard.lua
 
 # Config Files
 Config/Defaults.lua
@@ -35,7 +36,7 @@ Modules/Skin/Skinner.lua
 
 Modules/Maps/Maps.lua
 
-Modules/ActionBars/RemoveBlizzard.lua
+
 Modules/ActionBars/ActionButton.lua
 Modules/ActionBars/ActionBars.lua
 
