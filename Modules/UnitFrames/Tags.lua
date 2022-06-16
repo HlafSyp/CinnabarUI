@@ -8,6 +8,7 @@ end
 
 oUF.Tags.Methods['Cinnabar:curhp'] = function(unit, realUnit)
 
+    if unit == 'vehicle' then unit = 'player' end
     local health = UnitHealth(unit)
     local Shorten = Cfg.config.UnitFrames[unit].HealthBar.ShortenHealthText
     local precision = Cfg.config.UnitFrames[unit].HealthBar.HealthTextPrecision
@@ -31,6 +32,7 @@ end
 
 oUF.Tags.Methods['Cinnabar:smartpower'] = function(unit, realUnit)
 
+    if unit == 'vehicle' then unit = 'player' end
     local AbsOrPerc = Cfg.config.UnitFrames.PercentagePower
     local class = select(2,UnitClass(unit))
     local spec = GetSpecialization()
@@ -46,6 +48,7 @@ end
 
 oUF.Tags.Methods['Cinnabar:smartname'] = function(unit, realUnit)
 
+    if unit == 'vehicle' then unit = 'player' end
     local name = UnitName(unit)
     local ColorText = Cfg.config.UnitFrames[unit].HealthBar.ColorLevelText
     local Mirror    = Cfg.config.UnitFrames[unit].Mirror
