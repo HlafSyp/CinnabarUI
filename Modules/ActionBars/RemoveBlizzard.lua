@@ -79,7 +79,7 @@ function Actionbars:RemoveBlizzard()
     end
   end
   MainMenuBarArtFrameBackground:Hide()
-  StatusTrackingBarManager:Hide()
+  StatusTrackingBarManager:SetAlpha(0)
 
   -- Hide the Artwork on the side of the action bars
   local leftArt = MainMenuBarArtFrame.LeftEndCap
@@ -90,3 +90,5 @@ function Actionbars:RemoveBlizzard()
   Remove(pageNum)
 
 end
+
+Cinnabar.trash = trash
