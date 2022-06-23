@@ -33,19 +33,101 @@ do
 
   end
 
+  function TargetInfo:Update(frame, reset)
+
+    if frame:IsVisible() and not reset then
+      if TargetInfo.Runes then
+        TargetInfo.Runes:ChangeVOffset(frame:GetHeight() + 3)
+      elseif TargetInfo.ClassPower then
+        TargetInfo.ClassPower:ChangeVOffset(frame:GetHeight() + 3)
+      end
+    else
+      if TargetInfo.Runes then
+        TargetInfo.Runes:ChangeVOffset(0)
+      elseif TargetInfo.ClassPower then
+        TargetInfo.ClassPower:ChangeVOffset(0)
+      end
+    end
+  end
+
   Nameplate.TargetInfo = TargetInfo
 
 end
 
 
+local tt = CreateFrame('GameTooltip', 'CinnabarScanningTooltip', Cinnabar.trash, 'GameTooltipTemplate')
+tt:SetAlpha(0)
+tt:SetOwner(WorldFrame, 'ANCHOR_NONE')
+tt:AddFontStrings(
+  tt:CreateFontString( "$parentTextLeft1", nil, "GameTooltipText" ),
+  tt:CreateFontString( "$parentTextRight1", nil, "GameTooltipText" )
+);
+tt:RegisterEvent('QUEST_ACCEPTED')
+tt:RegisterEvent('QUEST_WATCH_UPDATE')
+local function IsQuestMob(unit)
+  assert(type(unit) == 'string', 'Function IsQuestMob(unit) expected type \'string\' for argument #1, got ' .. type(unit))
+
+  local function EnumerateTooltipLines_helper(...)
+    for i = 1, select("#", ...) do
+      local region = select(i, ...)
+      if region and region:GetObjectType() == "FontString" then
+        local text = region:GetText() -- string or nil
+        local i, j = string.find(text or '', '%d+/%d+')
+
+        if not i and not j then i, j = string.find(text or '', '%(%d+%%%)') end
+        if i and j then
+          -- Check if quest is complete before returning true
+          local _, _, left, right = string.find(text or '', '(%d+)/(%d+)')
+          if left and right and tonumber(left) == tonumber(right) then return false end
+          local _, _, percentage = string.find(text or '', '%((%d+)%%%)')
+          if percentage and tonumber(percentage) == 100 then return false end
+          return true
+        end
+      end
+    end
+    return false
+  end
+  tt:ClearLines()
+  tt:SetUnit(unit)
+  return EnumerateTooltipLines_helper(tt:GetRegions())
+end
+
+-- Nameplates only update when they are added, removed, or the target is changed, so have to manually update them
+-- if a quest is accepted to see if any of the mobs are quest mobs
+tt:SetScript('OnEvent', function(self, event)
+
+  for i = 1, 40 do
+    local nameplate = _G['CinnabarUI_Nameplate'..i]
+    if nameplate then
+      if nameplate:IsVisible() then
+        if UnitReaction('player', unit) < 5 and not UnitIsPlayer(unit) then
+          if IsQuestMob(unit) then
+            self.qMarker:Show()
+          else
+            self.qMarker:Hide()
+          end
+        end
+      end
+    end
+  end
+
+end)
+
 local function NameplateCallback(self, event, unit)
 
   if event == 'NAME_PLATE_UNIT_ADDED' then
+    self.qMarker:Hide()
     if UnitIsFriend('player', unit) then
       self:ChangeToNameOnly()
     end
     if UnitIsUnit(unit, 'target') then
       Nameplate.TargetInfo:Pin(self)
+      Nameplate.TargetInfo:Update(self.Castbar)
+    end
+    if UnitReaction('player', unit) < 5 and not UnitIsPlayer(unit) then
+      if IsQuestMob(unit) then
+        self.qMarker:Show()
+      end
     end
 
   elseif event == 'NAME_PLATE_UNIT_REMOVED' then
@@ -140,11 +222,7 @@ local function CreateCastBar(self, unit)
 
   function Castbar:PostCastStart(unit)
 
-    if TargetInfo.Runes then
-      TargetInfo.Runes:ChangeVOffset(Castbar:GetHeight() + 3)
-    elseif TargetInfo.ClassPower then
-      TargetInfo.ClassPower:ChangeVOffset(Castbar:GetHeight() + 3)
-    end
+    Nameplate.TargetInfo:Update(self)
 
     if self.AlternativePower then
       self.AlternativePower:ClearAllPoints()
@@ -156,11 +234,7 @@ local function CreateCastBar(self, unit)
 
   function Castbar:PostCastStop(unit)
 
-    if TargetInfo.Runes then
-      TargetInfo.Runes:ChangeVOffset(0)
-    elseif TargetInfo.ClassPower then
-      TargetInfo.ClassPower:ChangeVOffset(0)
-    end
+    Nameplate.TargetInfo:Update(self, true)
 
     if self.AlternativePower then
       self.AlternativePower:ClearAllPoints()
@@ -223,6 +297,8 @@ local function CreateHealthBar(self, unit)
   Health.Smooth = true
   Health.colorClass = true
   Health.colorReaction = true
+  Health.colorTapping = true
+  Health.colorThreat = true
 
   return Health
 
@@ -289,7 +365,7 @@ local function CreateNameplate(self,  unit)
     self.Highlight:Hide()
   end)
 
-  -- Register it with oUF
+  -- Create the backdrop
   self.Backdrop   = CreateFrame("Frame", nil, self, "BackdropTemplate")
   self.Backdrop:SetAllPoints(self)
   self.Backdrop:SetFrameLevel(self:GetFrameLevel() == 0 and 0 or self:GetFrameLevel() - 1)
@@ -307,6 +383,14 @@ local function CreateNameplate(self,  unit)
   }
   self.Backdrop:SetBackdropColor(0,0,0, 1)
 
+  -- Add quest marker
+  local qMarker = self:CreateTexture(nil, 'ARTWORK')
+  qMarker:SetTexture('Interface\\QUESTFRAME\\QuestTypeIcons')
+  qMarker:SetTexCoord(1 / 7, 2 / 7, 0, 1 / 3.5)
+  qMarker:SetPoint('RIGHT', self, 'LEFT', 0, 0)
+  qMarker:SetSize(16,16)
+  self.qMarker = qMarker
+
   function self:ChangeToNameOnly()
 
     self.Backdrop:Hide()
@@ -314,6 +398,7 @@ local function CreateNameplate(self,  unit)
     self:DisableElement('Castbar')
     self:SetScript('OnEnter', nil)
     SecondaryName:Show()
+    SecondaryNameTitle:Show()
 
   end
 
@@ -324,7 +409,7 @@ local function CreateNameplate(self,  unit)
     self:EnableElement('Castbar')
     self:SetScript('OnEnter', function() self.Highlight:Show() end)
     SecondaryName:Hide()
-    SecondaryNameTitle:Show()
+    SecondaryNameTitle:Hide()
 
   end
 
